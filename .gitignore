@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+code_screenshots/
+smart_documents/
+build/
+dist/
+*.spec.bak

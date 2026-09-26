@@ -1,0 +1,13 @@
+/* Main card styles */
+.card {
+    color: #1463a0;
+    background-color: white;
+    padding: 16px 24px;
+    border: 1px solid #ddd;
+}
+
+@media (max-width: 700px) {
+    .card:hover {
+        color: rgb(20, 99, 160);
+    }
+}

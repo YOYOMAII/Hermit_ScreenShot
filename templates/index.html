@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hermit — Code screenshots</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-icon" src="{{ url_for('static', filename='hermit-icon.jpg') }}" width="36" height="36" alt="">
+        <span>Hermit</span>
+        <span class="brand-credit">Built by SFU DC 14</span>
+      </div>
+      <div class="topbar-actions">
+        <a class="topbar-link" href="{{ url_for('smart') }}">HermitSmart <span aria-hidden="true">↗</span></a>
+        <button type="button" class="theme-toggle" id="app-theme-toggle" aria-pressed="false" aria-label="Switch app to dark mode">
+          <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+          <span class="theme-toggle-label">Dark app</span>
+        </button>
+      </div>
+    </header>
+    <main class="workspace">
+      <aside class="controls" aria-label="Screenshot settings">
+        <div class="intro">
+          <h1>Code screenshots</h1>
+          <p>Upload source files and get clean, numbered images for your document.</p>
+        </div>
+
+        <form id="render-form">
+          <label class="dropzone" id="dropzone" for="files">
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <strong>Drop files here</strong>
+            <span>or browse HTML and CSS files</span>
+            <input id="files" name="files" type="file" accept=".html,.css,text/html,text/css" multiple>
+          </label>
+          <ul class="file-list" id="file-list" aria-live="polite"></ul>
+
+          <div class="settings-heading"><span>Output settings</span><span>01 / 02</span></div>
+          <div class="fields two-up">
+            <label><span>Lines per image</span><input name="lines" type="number" min="1" max="100" value="20"></label>
+            <label><span>Font size</span><div class="unit-input"><input name="font_size" type="number" min="8" max="48" value="24"><em>px</em></div></label>
+          </div>
+          <div class="fields">
+            <label><span>Screenshot theme</span><select name="theme" id="screenshot-theme"><option value="light">VS Code Light</option><option value="light-modern">Light Modern</option><option value="dark">Dark</option></select></label>
+          </div>
+          <div class="fields">
+            <label><span>Image naming</span><select name="name_style"><option value="simple">Simple — index1.png</option><option value="padded">Padded — index_001.png</option></select></label>
+          </div>
+          <div class="fields two-up">
+            <label><span>Minimum width</span><div class="unit-input"><input name="width" type="number" min="200" max="4000" value="1200"><em>px</em></div></label>
+            <label><span>Active line (0 = none)</span><input name="active_line" type="number" min="0" value="0"></label>
+          </div>
+          <button class="primary-button" type="submit" id="render-button" aria-busy="false">
+            <span class="button-label">Generate screenshots</span>
+            <span class="button-spinner" aria-hidden="true" hidden></span>
+            <span class="button-icon" aria-hidden="true">↗</span>
+          </button>
+          <p class="form-error" id="form-error" role="alert" hidden></p>
+        </form>
+        <p class="check-note" role="note"><strong>Check before you submit.</strong> Hermit copies your code exactly as written. It does not check whether your code is correct. Open every image and compare it with your source file: make sure no lines are missing and the file names and order are right. You are responsible for checking your own work.</p>
+        <p class="sidebar-footer">Files are rendered on this computer. Your source files are not changed. Generated images are deleted automatically after {{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}, so download the ones you need.<br><span class="credit">Built by SFU DC 14 student</span></p>
+      </aside>
+
+      <section class="preview-area" aria-label="Screenshot preview">
+        <div class="preview-toolbar">
+          <div><h2>Preview</h2></div>
+          <span class="preview-count" id="preview-count" data-keep="{{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}">No images yet</span>
+        </div>
+        <div class="preview-stage" id="preview-stage">
+          <div class="preview-loading" id="preview-loading" hidden aria-live="polite" aria-busy="false">
+            <div class="preview-loading-card">
+              <span class="loading-spinner" aria-hidden="true"></span>
+              <p>Generating screenshots…</p>
+              <span>Rendering your files — they will show up here when ready.</span>
+            </div>
+          </div>
+          <div class="empty-state" id="empty-state">
+            <div class="sample-window" aria-hidden="true">
+              <div class="sample-code"><span class="ln">1</span><span><b class="blue">&lt;main</b> <b class="rust">class</b>=<b class="string">"evidence"</b><b class="blue">&gt;</b></span><span class="ln">2</span><span>&nbsp; &nbsp;<b class="blue">&lt;h1&gt;</b>Your code, clearly.<b class="blue">&lt;/h1&gt;</b></span><span class="ln">3</span><span>&nbsp; &nbsp;<b class="comment">&lt;!-- Ready for your document --&gt;</b></span><span class="ln">4</span><span><b class="blue">&lt;/main&gt;</b></span></div>
+            </div>
+            <p>Your screenshots will appear here.</p>
+            <span>One image per line range, ready to download.</span>
+          </div>
+          <div class="result" id="result" hidden>
+            <img id="preview-image" alt="Generated code screenshot preview">
+          </div>
+        </div>
+        <div class="result-controls" id="result-controls" hidden>
+          <div class="image-navigation"><button type="button" id="previous" aria-label="Previous image">←</button><span id="image-position">1 / 1</span><button type="button" id="next" aria-label="Next image">→</button></div>
+          <div class="image-navigation zoom-controls"><button type="button" id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-level" aria-live="polite">Fit</span><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div>
+          <div class="download-actions"><a id="download-current" download>Download image</a><a class="download-all" id="download-all">Download all ZIP <span aria-hidden="true">↓</span></a></div>
+        </div>
+        <div class="thumbnail-strip" id="thumbnail-strip" hidden aria-label="Generated images"></div>
+      </section>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HermitSmart — Code screenshots in Word</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-icon" src="{{ url_for('static', filename='hermit-icon.jpg') }}" width="36" height="36" alt="">
+        <span>HermitSmart</span>
+      </div>
+      <div class="topbar-actions">
+        <a class="topbar-link" href="{{ url_for('index') }}"><span aria-hidden="true">←</span> Screenshots</a>
+        <button type="button" class="theme-toggle" id="app-theme-toggle" aria-pressed="false" aria-label="Switch app to dark mode">
+          <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+          <span class="theme-toggle-label">Dark app</span>
+        </button>
+      </div>
+    </header>
+    <main class="workspace">
+      <aside class="controls" aria-label="HermitSmart settings">
+        <div class="intro">
+          <h1>HermitSmart</h1>
+          <p>Put code screenshots into your Word document: two per page, each with a caption text box below it.</p>
+        </div>
+
+        <form id="smart-form">
+          <div class="settings-heading"><span>Word document</span><span>01 / 03</span></div>
+          <label class="dropzone smart-dropzone" id="docx-dropzone" for="docx">
+            <span class="upload-icon" aria-hidden="true">W</span>
+            <strong>Drop a .docx here</strong>
+            <span>or browse for a Word document</span>
+            <input id="docx" name="docx" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+          </label>
+          <div class="doc-status" id="doc-status" hidden>
+            <span class="file-badge">DOCX</span>
+            <div><strong id="doc-name"></strong><span id="doc-summary"></span></div>
+          </div>
+
+          <div class="settings-heading"><span>Code files</span><span>02 / 03</span></div>
+          <label class="dropzone smart-dropzone" id="code-dropzone" for="code-files">
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <strong>Drop code files here</strong>
+            <span>or browse HTML and CSS files</span>
+            <input id="code-files" name="files" type="file" accept=".html,.css,text/html,text/css" multiple>
+          </label>
+          <ul class="file-list" id="code-list" aria-live="polite"></ul>
+
+          <div class="settings-heading"><span>Insert settings</span><span>03 / 03</span></div>
+          <div class="fields two-up">
+            <label><span>Lines per image</span><input name="lines" type="number" min="1" max="100" value="20"></label>
+            <label><span>Font size</span><div class="unit-input"><input name="font_size" type="number" min="8" max="48" value="24"><em>px</em></div></label>
+          </div>
+          <div class="fields">
+            <label><span>Screenshot theme</span><select name="theme"><option value="light">VS Code Light</option><option value="light-modern">Light Modern</option><option value="dark">Dark</option></select></label>
+          </div>
+          <div class="fields">
+            <label><span>Insert position</span><select name="insert_mode" id="insert-mode">
+              <option value="continue">Continue after the last HermitSmart figure</option>
+              <option value="after_page">After page…</option>
+              <option value="end" selected>End of document</option>
+            </select></label>
+          </div>
+          <div class="fields two-up">
+            <label id="after-page-field" hidden><span>After page (0 = start)</span><input name="after_page" id="after-page" type="number" min="0" value="1"></label>
+            <label><span>Start figure number</span><input name="start_figure" id="start-figure" type="number" min="1" placeholder="Auto"></label>
+          </div>
+          <div class="fields">
+            <label><span>Caption text (Arial 11)</span><input name="caption_template" id="caption-template" type="text" maxlength="200" value="{{ default_caption }}"></label>
+          </div>
+          <p class="field-hint">Use {n} figure number, {stem} file name, {part} part number, {ext} extension, {file} full name, {file_no} file number.</p>
+          <p class="field-hint" id="page-hint" hidden>Page numbers come from the page breaks Word saved in the file, so check the result in Word.</p>
+          <button class="primary-button" type="submit" id="build-button"><span>Build Word document</span><span aria-hidden="true">↗</span></button>
+          <p class="form-error" id="form-error" role="alert" hidden></p>
+        </form>
+        <p class="check-note" role="note"><strong>Check before you submit.</strong> HermitSmart copies your code exactly as written. It does not check whether your code is correct. Page positions are estimates. Open the downloaded document in Word, check every page, and make sure each image, caption, and figure number is right. You are responsible for checking your own work.</p>
+        <p class="sidebar-footer">Files are processed on this computer. Your original document is not changed; HermitSmart makes an updated copy. The updated copy is deleted automatically after {{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}, so download it when it's ready.<br><span class="credit">Built by SFU DC 14 student</span></p>
+      </aside>
+
+      <section class="preview-area" aria-label="Document preview">
+        <div class="preview-toolbar">
+          <div><h2>Document preview</h2></div>
+          <span class="preview-count" id="preview-count" data-keep="{{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}">No pages yet</span>
+        </div>
+        <div class="preview-stage" id="preview-stage">
+          <div class="empty-state" id="empty-state">
+            <div class="doc-page sample-page" aria-hidden="true">
+              <div class="doc-slot"><div class="doc-image-placeholder"></div><p class="doc-caption">Fig 1: index1.html</p></div>
+              <div class="doc-slot"><div class="doc-image-placeholder"></div><p class="doc-caption">Fig 2: index2.html</p></div>
+            </div>
+            <p>Your Word pages will appear here.</p>
+            <span>Two figures per page, each with its caption text box.</span>
+          </div>
+          <div class="smart-result" id="smart-result" hidden></div>
+        </div>
+        <div class="result-controls" id="result-controls" hidden>
+          <span class="smart-summary" id="smart-summary"></span>
+          <div class="download-actions">
+            <button type="button" class="secondary-button" id="keep-adding">Keep adding to this document</button>
+            <a class="download-all" id="download-docx" download>Download .docx <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='smart.js') }}" defer></script>
+</body>
+</html>
