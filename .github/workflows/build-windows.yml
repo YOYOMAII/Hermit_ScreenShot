@@ -1,0 +1,50 @@
+# Builds HermitScreenshot.exe on Windows (PyInstaller cannot cross-compile from macOS).
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "desktop_app.py"
+      - "app.py"
+      - "code_screenshot.py"
+      - "hermit_smart.py"
+      - "code_screenshots.spec"
+      - "requirements-desktop.txt"
+      - "templates/**"
+      - "static/**"
+      - ".github/workflows/build-windows.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and build
+        run: |
+          python -m pip install -r requirements-desktop.txt
+          python scripts/generate_app_icons.py
+          python -m PyInstaller --noconfirm --clean code_screenshots.spec
+
+      - name: Package HermitScreenshot-Windows.zip
+        shell: pwsh
+        run: |
+          if (Test-Path releases/HermitScreenshot-Windows.zip) {
+            Remove-Item releases/HermitScreenshot-Windows.zip -Force
+          }
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item GETTING-STARTED.md dist/HermitScreenshot/
+          Compress-Archive -Path dist/HermitScreenshot, GETTING-STARTED.md `
+            -DestinationPath releases/HermitScreenshot-Windows.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HermitScreenshot-Windows
+          path: releases/HermitScreenshot-Windows.zip
+          if-no-files-found: error

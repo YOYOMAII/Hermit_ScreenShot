@@ -8,6 +8,13 @@ from PyInstaller.utils.hooks import collect_all
 
 block_cipher = None
 root = Path(SPECPATH)
+icon_dir = root / "packaging" / "icons"
+if sys.platform == "darwin":
+    app_icon = icon_dir / "HermitScreenshot.icns"
+elif sys.platform == "win32":
+    app_icon = icon_dir / "HermitScreenshot.ico"
+else:
+    app_icon = icon_dir / "HermitScreenshot.ico"
 
 datas = [
     (str(root / "templates"), "templates"),
@@ -56,7 +63,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="CodeScreenshots",
+    name="HermitScreenshot",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -67,6 +74,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=str(app_icon) if app_icon.is_file() else None,
 )
 
 coll = COLLECT(
@@ -77,13 +85,13 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="CodeScreenshots",
+    name="HermitScreenshot",
 )
 
 if sys.platform == "darwin":
     app = BUNDLE(
         coll,
-        name="CodeScreenshots.app",
-        icon=None,
-        bundle_identifier="com.hermit.codescreenshots",
+        name="HermitScreenshot.app",
+        icon=str(app_icon) if app_icon.is_file() else None,
+        bundle_identifier="com.hermit.hermitscreenshot",
     )

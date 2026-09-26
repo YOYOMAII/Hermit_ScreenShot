@@ -4,4 +4,6 @@ code_screenshots/
 smart_documents/
 build/
 dist/
+releases/HermitScreenshot.app
+packaging/icons/*.iconset/
 *.spec.bak

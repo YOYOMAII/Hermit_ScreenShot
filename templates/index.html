@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hermit — Code screenshots</title>
+  <title>Hermit</title>
+  <link rel="icon" href="{{ url_for('static', filename='hermit-icon.jpg') }}" type="image/jpeg">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body>
@@ -12,7 +13,6 @@
       <div class="brand">
         <img class="brand-icon" src="{{ url_for('static', filename='hermit-icon.jpg') }}" width="36" height="36" alt="">
         <span>Hermit</span>
-        <span class="brand-credit">Built by SFU DC 14</span>
       </div>
       <div class="topbar-actions">
         <a class="topbar-link" href="{{ url_for('smart') }}">HermitSmart <span aria-hidden="true">↗</span></a>
@@ -61,7 +61,7 @@
           <p class="form-error" id="form-error" role="alert" hidden></p>
         </form>
         <p class="check-note" role="note"><strong>Check before you submit.</strong> Hermit copies your code exactly as written. It does not check whether your code is correct. Open every image and compare it with your source file: make sure no lines are missing and the file names and order are right. You are responsible for checking your own work.</p>
-        <p class="sidebar-footer">Files are rendered on this computer. Your source files are not changed. Generated images are deleted automatically after {{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}, so download the ones you need.<br><span class="credit">Built by SFU DC 14 student</span></p>
+        <p class="sidebar-footer">Files are rendered on this computer. Your source files are not changed. Generated images are deleted automatically after {{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}, so download the ones you need.</p>
       </aside>
 
       <section class="preview-area" aria-label="Screenshot preview">

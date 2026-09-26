@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-APP_SUPPORT_NAME = "HermitCodeScreenshots"
+APP_SUPPORT_NAME = "HermitScreenshot"
 
 
 def is_frozen() -> bool:

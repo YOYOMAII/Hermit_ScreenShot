@@ -1,5 +1,7 @@
 # Code screenshots
 
+**New users (desktop app):** see **[GETTING-STARTED.md](GETTING-STARTED.md)** — install, screenshots, HermitSmart, and troubleshooting.
+
 Turn HTML and CSS source files into PNGs that resemble the Visual Studio Code Light editor. The program reads your files without changing them, keeps indentation and line numbers, and makes one image for each group of 20 lines.
 
 ## Install
@@ -83,12 +85,30 @@ You are responsible for checking the final result yourself.
 
 ## Share a desktop app with friends (Mac and Windows)
 
-Friends do **not** need Python installed if you give them a build you made on their operating system.
+**What to send (only these):**
 
-| Your friend uses | You build on | What you send them |
-|------------------|--------------|-------------------|
-| **Mac** | A Mac | `dist/CodeScreenshots.app` (zip it first) |
-| **Windows** | Windows | Zip the whole `dist/CodeScreenshots` folder |
+| Friend has | Send this file |
+|------------|----------------|
+| **Mac** | `releases/HermitScreenshot-Mac.zip` |
+| **Windows** | `releases/HermitScreenshot-Windows.zip` (unzip → `HermitScreenshot\HermitScreenshot.exe`) |
+
+Do **not** send your whole project, `.venv`, `build/`, `dist/`, or `code_screenshots/`. See `releases/WHAT-TO-SEND.txt`.
+
+**Make fresh zip files:**
+
+```bash
+chmod +x scripts/export_for_friends.sh
+./scripts/export_for_friends.sh
+```
+
+That creates the **Mac** zip on your Mac. A **Windows** `.exe` cannot be built on macOS — create `HermitScreenshot-Windows.zip` once on a Windows PC (`scripts\build_desktop.bat`) or with GitHub Actions (**Build Windows app** workflow → download artifact).
+
+Friends do **not** need Python if you send the Mac zip or the Windows zip above.
+
+| Your friend uses | You build on | Ready-to-run output |
+|------------------|--------------|---------------------|
+| **Mac** | A Mac | `HermitScreenshot-Mac.zip` |
+| **Windows** | Windows (or GitHub Actions) | `HermitScreenshot-Windows.zip` |
 
 You cannot make a Windows `.exe` on a Mac (or a Mac `.app` on Windows) with this setup. Build once per platform, or ask a friend on the other OS to run the build script.
 

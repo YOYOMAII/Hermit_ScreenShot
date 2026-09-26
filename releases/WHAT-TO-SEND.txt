@@ -1,0 +1,31 @@
+HermitScreenshot — what to send friends
+======================================
+
+Include GETTING-STARTED.md (or point friends to it inside the zip).
+
+Mac friend (Apple laptop/desktop):
+  Send: HermitScreenshot-Mac.zip
+  They unzip, open HermitScreenshot.app
+  First time: right-click app → Open → Open
+
+Windows friend (easy — preferred):
+  Send: HermitScreenshot-Windows.zip
+  They unzip, open folder HermitScreenshot, double-click HermitScreenshot.exe
+  First time: SmartScreen → More info → Run anyway
+
+How YOU create HermitScreenshot-Windows.zip (cannot be done on Mac):
+  • Windows: unzip HermitScreenshot-Windows-build.zip, run scripts\build_desktop.bat
+    → creates releases\HermitScreenshot-Windows.zip automatically
+  • Or GitHub: push repo, Actions → "Build Windows app" → download artifact
+
+Windows friend (only if you sent source kit by mistake):
+  HermitScreenshot-Windows-build.zip + Python + scripts\build_desktop.bat
+
+You do NOT need to send:
+  - Your whole codess folder
+  - .venv, build/, dist/ (unless you built Windows exe for them)
+  - code_screenshots/ or smart_documents/ (your temp files)
+  - Source code, tests, or README (unless they are developers)
+
+Keep for yourself (development):
+  Everything else in the project folder.

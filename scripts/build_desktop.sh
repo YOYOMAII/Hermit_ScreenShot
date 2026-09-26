@@ -8,10 +8,11 @@ fi
 # shellcheck disable=SC1091
 source .venv/bin/activate
 python -m pip install -q -r requirements-desktop.txt
+python scripts/generate_app_icons.py
 python -m PyInstaller --noconfirm --clean code_screenshots.spec
 
 echo ""
 echo "Done. Share this folder with Mac users:"
-echo "  dist/CodeScreenshots.app"
+echo "  dist/HermitScreenshot.app"
 echo ""
 echo "They may need: right-click the app → Open (first time only, unsigned build)."

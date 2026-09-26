@@ -48,7 +48,7 @@ def run_desktop() -> None:
         import webview
 
         window = webview.create_window(
-            "Code Screenshots",
+            "Hermit",
             url,
             width=1120,
             height=820,
