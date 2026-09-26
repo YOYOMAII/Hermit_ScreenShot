@@ -115,7 +115,7 @@ chmod +x scripts/export_for_friends.sh
 
 That creates the **Mac** zip on your Mac. For **both** Mac and Windows zips without building locally, use **[GitHub Releases](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)** (see below).
 
-**Publish a new release (Mac + Windows zips):** push a tag like `v1.0.5` or run **Actions → Release → Run workflow**. This repo is private, so the workflow publishes the zips to the public download-only repo **[YOYOMAII/HermitScreenshot](https://github.com/YOYOMAII/HermitScreenshot)**. That repo holds only a README, so the "Source code" files GitHub adds to every release contain no app code. Publishing there needs a repo secret named `RELEASES_TOKEN`: a fine-grained token with **Contents: Read and write** on `YOYOMAII/HermitScreenshot`.
+**Publish a new release (Mac + Windows zips):** push a tag like `v1.0.5` or run **Actions → Release → Run workflow**. The workflow publishes the zips to the download-only repo **[YOYOMAII/HermitScreenshot](https://github.com/YOYOMAII/HermitScreenshot)**. That repo holds only a README, so the "Source code" files GitHub adds to every release contain no app code. Publishing there needs a repo secret named `RELEASES_TOKEN`: a fine-grained token with **Contents: Read and write** on `YOYOMAII/HermitScreenshot`.
 
 Friends do **not** need Python if you send the Mac zip or the Windows zip above.
 

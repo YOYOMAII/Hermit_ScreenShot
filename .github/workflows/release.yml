@@ -138,9 +138,9 @@ jobs:
             HermitScreenshot-Mac.zip
             HermitScreenshot-Windows.zip
 
-      - name: Warn that friends cannot see this release
+      - name: Warn that the download repo was skipped
         if: env.HAS_RELEASES_TOKEN != 'true'
-        run: echo "::warning::RELEASES_TOKEN is not set, so this release goes to the private repo and friends cannot download it. See README (Publish a new release)."
+        run: echo "::warning::RELEASES_TOKEN is not set, so this release goes to this repo instead of ${PUBLIC_REPO}, and the friend link will not update. See README (Publish a new release)."
 
       - name: Publish to this repo (fallback)
         if: env.HAS_RELEASES_TOKEN != 'true'
