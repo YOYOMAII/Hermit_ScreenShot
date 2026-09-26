@@ -13,7 +13,7 @@ Mac friend (Apple laptop/desktop):
 
 Windows friend (easy — preferred):
   Send: HermitScreenshot-Windows.zip
-  They unzip, open folder HermitScreenshot, double-click HermitScreenshot.exe
+  They unzip and double-click HermitScreenshot.exe
   First time: SmartScreen → More info → Run anyway
 
 How YOU create HermitScreenshot-Windows.zip (cannot be done on Mac):

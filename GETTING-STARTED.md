@@ -11,7 +11,7 @@ Everything runs **on your computer**. Your files are not uploaded to the interne
 | If you have… | You received… | You need… |
 |--------------|---------------|-----------|
 | **Mac** (Apple) | `HermitScreenshot-Mac.zip` | Nothing else — unzip and open the app |
-| **Windows** | `HermitScreenshot-Windows.zip` | Nothing else — unzip and run `HermitScreenshot\HermitScreenshot.exe` |
+| **Windows** | `HermitScreenshot-Windows.zip` | Nothing else — unzip and double-click **`HermitScreenshot.exe`** |
 | **Windows** (developer kit) | `HermitScreenshot-Windows-build.zip` | [Python 3](https://www.python.org/downloads/) once, then `scripts\build_desktop.bat` (see below) |
 
 The app is about **21 MB** on Mac because it includes Python and libraries inside the app so you do not install them yourself.
@@ -98,9 +98,8 @@ Signing costs money each year; most school projects skip it.
 ### Option A — `HermitScreenshot-Windows.zip` (usual)
 
 1. **Unzip** `HermitScreenshot-Windows.zip`.
-2. Open the **`HermitScreenshot`** folder.
-3. Double-click **`HermitScreenshot.exe`**.
-4. Keep **all files in that folder** together — do not move only the `.exe`.
+2. Double-click **`HermitScreenshot.exe`** (and **`GETTING-STARTED.md`** if you want the guide).
+3. The zip contains **one app file**, not a folder of library code — that is normal.
 
 If Windows SmartScreen warns you, see **[“Untrusted” or blocked app](#untrusted-or-blocked-app--mac-and-windows)** above.
 

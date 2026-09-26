@@ -11,15 +11,13 @@ python scripts\generate_app_icons.py
 python -m PyInstaller --noconfirm --clean code_screenshots.spec
 
 if not exist releases mkdir releases
-copy /Y GETTING-STARTED.md dist\HermitScreenshot\ >nul
-powershell -NoProfile -Command "$ErrorActionPreference='Stop'; if (Test-Path 'releases\HermitScreenshot-Windows.zip') { Remove-Item 'releases\HermitScreenshot-Windows.zip' -Force }; Compress-Archive -Path 'dist\HermitScreenshot','GETTING-STARTED.md' -DestinationPath 'releases\HermitScreenshot-Windows.zip' -Force"
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; if (Test-Path 'releases\HermitScreenshot-Windows.zip') { Remove-Item 'releases\HermitScreenshot-Windows.zip' -Force }; Compress-Archive -Path 'dist\HermitScreenshot.exe','GETTING-STARTED.md' -DestinationPath 'releases\HermitScreenshot-Windows.zip' -Force"
 
 echo.
 echo Done. Send Windows friends this zip (easy — no Python needed):
 echo   releases\HermitScreenshot-Windows.zip
-echo   Unzip, then run HermitScreenshot\HermitScreenshot.exe
+echo   Unzip, then double-click HermitScreenshot.exe
 echo.
 echo Or run locally without zipping:
-echo   dist\HermitScreenshot\HermitScreenshot.exe
-echo   (keep the whole HermitScreenshot folder together)
+echo   dist\HermitScreenshot.exe
 pause
