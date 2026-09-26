@@ -1,0 +1,106 @@
+# Build Mac + Windows desktop zips and publish a GitHub Release for friends.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag (example v1.0.0)"
+        required: true
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and build
+        run: |
+          python -m pip install -r requirements-desktop.txt
+          python scripts/generate_app_icons.py
+          python -m PyInstaller --noconfirm --clean code_screenshots.spec
+
+      - name: Package HermitScreenshot-Mac.zip
+        run: |
+          mkdir -p releases
+          cp GETTING-STARTED.md dist/
+          cd dist
+          zip -r -y ../releases/HermitScreenshot-Mac.zip HermitScreenshot.app GETTING-STARTED.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HermitScreenshot-Mac
+          path: releases/HermitScreenshot-Mac.zip
+          if-no-files-found: error
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install and build
+        run: |
+          python -m pip install -r requirements-desktop.txt
+          python scripts/generate_app_icons.py
+          python -m PyInstaller --noconfirm --clean code_screenshots.spec
+
+      - name: Package HermitScreenshot-Windows.zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path releases | Out-Null
+          Copy-Item GETTING-STARTED.md dist/HermitScreenshot/
+          Compress-Archive -Path dist/HermitScreenshot, GETTING-STARTED.md `
+            -DestinationPath releases/HermitScreenshot-Windows.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HermitScreenshot-Windows
+          path: releases/HermitScreenshot-Windows.zip
+          if-no-files-found: error
+
+  publish:
+    needs: [build-mac, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: HermitScreenshot-*
+          merge-multiple: true
+          path: bundles
+
+      - name: Collect zip files
+        run: |
+          find bundles -name '*.zip' -exec cp {} . \;
+          ls -lh *.zip
+
+      - name: Resolve release tag
+        id: meta
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: HermitScreenshot ${{ steps.meta.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            HermitScreenshot-Mac.zip
+            HermitScreenshot-Windows.zip

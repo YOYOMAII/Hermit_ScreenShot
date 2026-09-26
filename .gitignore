@@ -4,6 +4,10 @@ code_screenshots/
 smart_documents/
 build/
 dist/
-releases/HermitScreenshot.app
+.DS_Store
 packaging/icons/*.iconset/
 *.spec.bak
+
+# Local release bundles (CI publishes to GitHub Releases)
+releases/*
+!releases/WHAT-TO-SEND.txt

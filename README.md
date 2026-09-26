@@ -101,7 +101,9 @@ chmod +x scripts/export_for_friends.sh
 ./scripts/export_for_friends.sh
 ```
 
-That creates the **Mac** zip on your Mac. A **Windows** `.exe` cannot be built on macOS — create `HermitScreenshot-Windows.zip` once on a Windows PC (`scripts\build_desktop.bat`) or with GitHub Actions (**Build Windows app** workflow → download artifact).
+That creates the **Mac** zip on your Mac. For **both** Mac and Windows zips without building locally, use **[GitHub Releases](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)** (see below).
+
+**Publish a new release (Mac + Windows zips):** push a tag `v1.0.0` or run **Actions → Release → Run workflow**. Friends download from the Releases page.
 
 Friends do **not** need Python if you send the Mac zip or the Windows zip above.
 

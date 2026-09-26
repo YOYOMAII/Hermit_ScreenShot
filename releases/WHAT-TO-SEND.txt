@@ -1,7 +1,10 @@
 HermitScreenshot — what to send friends
 ======================================
 
-Include GETTING-STARTED.md (or point friends to it inside the zip).
+Download both zips (no Python needed):
+  https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest
+
+Include GETTING-STARTED.md (already inside each zip).
 
 Mac friend (Apple laptop/desktop):
   Send: HermitScreenshot-Mac.zip
