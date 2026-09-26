@@ -128,22 +128,25 @@
 .app-shell.ui-dark .secondary-button:hover{border-color:#569cd6;color:#9cdcfe}
 @media(max-width:500px){.topbar-link{padding:0 10px;font-size:10px}.doc-page{width:220px}}
 
-/* Keep preview + download bar usable in short or narrow windows (desktop webview). */
-.preview-area{flex:1;min-height:0}
-.preview-stage{flex:1 1 auto;min-height:140px;max-height:min(520px,calc(100vh - 250px))}
-.result-controls{flex:0 0 auto;flex-shrink:0;margin-top:auto;padding:12px 0 6px;gap:10px;align-items:flex-end;background:linear-gradient(180deg,rgba(241,243,246,0) 0%,#f1f3f6 28%)}
-.result-controls-main{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:6px}
-.download-status{margin:0;font-size:11px;line-height:1.45;font-weight:650;color:#1f7a3f}
+/* Preview column fills the window; downloads work in browser + desktop app. */
+.workspace{height:calc(100vh - 64px)}
+.preview-area{flex:1;min-height:0;display:flex;flex-direction:column}
+.preview-stage{flex:1 1 auto;min-height:160px;max-height:none}
+.result-controls{flex:0 0 auto;flex-shrink:0;gap:10px;padding:12px 0 6px}
+.download-status{margin:0;font-size:11px;line-height:1.45;font-weight:650;color:#1f7a3f;max-width:42rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .download-status[hidden]{display:none}
 .download-actions .download-all.is-busy,.download-actions a.is-busy{opacity:.65;pointer-events:none}
-@media(max-width:720px){
-.result-controls{flex-direction:column;align-items:stretch}
-.result-controls .download-actions{margin-left:0;width:100%;flex-direction:column;align-items:stretch}
-.download-actions .secondary-button,.download-actions .download-all{display:flex;align-items:center;justify-content:center;width:100%;text-align:center}
+.preview-toolbar-smart{align-items:flex-start;gap:16px;flex-wrap:wrap}
+.preview-toolbar-leading{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.preview-toolbar-leading h2{margin:0}
+.preview-toolbar-trailing{flex:1 1 320px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:0}
+.smart-download-bar{flex-wrap:wrap;justify-content:flex-end}
+.smart-summary{font-size:11px;font-weight:650;color:#5e6672}
+.smart-summary[hidden]{display:none}
+@media(max-width:900px){
+.preview-toolbar-trailing{align-items:stretch}
+.smart-download-bar{width:100%;flex-direction:column;align-items:stretch}
+.smart-download-bar .secondary-button,.smart-download-bar .download-all{display:flex;justify-content:center;width:100%;text-align:center}
+.download-status{white-space:normal}
 }
-@media(max-height:760px){
-.preview-stage{max-height:min(380px,calc(100vh - 270px))}
-.preview-area{padding-bottom:20px}
-}
-.app-shell.ui-dark .result-controls{background:linear-gradient(180deg,rgba(30,30,30,0) 0%,#1e1e1e 28%)}
 .app-shell.ui-dark .download-status{color:#6fcf97}

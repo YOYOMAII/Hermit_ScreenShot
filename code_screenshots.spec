@@ -30,6 +30,7 @@ binaries = []
 hiddenimports = [
     "app",
     "app_paths",
+    "desktop_bridge",
     "code_screenshot",
     "hermit_smart",
     "docx",

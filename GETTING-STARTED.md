@@ -101,7 +101,8 @@ Signing costs money each year; most school projects skip it.
 
 1. **Unzip** `HermitScreenshot-Windows.zip`.
 2. Double-click **`HermitScreenshot.exe`** (and **`GETTING-STARTED.md`** if you want the guide).
-3. The zip contains **one app file**, not a folder of library code — that is normal.
+3. The zip contains **one app file** (`HermitScreenshot.exe`) plus the guide — that is normal.
+4. **Download .docx** in HermitSmart opens a **Save** window — pick where to store your Word file (the app does not use the browser Downloads folder on desktop).
 
 If Windows SmartScreen warns you, see **[“Untrusted” or blocked app](#untrusted-or-blocked-app--mac-and-windows)** above.
 

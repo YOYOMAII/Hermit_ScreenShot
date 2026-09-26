@@ -82,10 +82,20 @@
         <p class="sidebar-footer">Files are processed on this computer. Your original document is not changed; HermitSmart makes an updated copy. The updated copy is deleted automatically after {{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}, so download it when it's ready.</p>
       </aside>
 
-      <section class="preview-area" aria-label="Document preview">
-        <div class="preview-toolbar">
-          <div><h2>Document preview</h2></div>
-          <span class="preview-count" id="preview-count" data-keep="{{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}">No pages yet</span>
+      <section class="preview-area preview-area-smart" aria-label="Document preview">
+        <div class="preview-toolbar preview-toolbar-smart">
+          <div class="preview-toolbar-leading">
+            <h2>Document preview</h2>
+            <span class="smart-summary" id="smart-summary" hidden></span>
+            <p class="download-status" id="download-status" role="status" aria-live="polite" hidden></p>
+          </div>
+          <div class="preview-toolbar-trailing">
+            <span class="preview-count" id="preview-count" data-keep="{{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}">No pages yet</span>
+            <div class="download-actions smart-download-bar" id="result-controls" hidden>
+              <button type="button" class="secondary-button" id="keep-adding">Keep adding to this document</button>
+              <a class="download-all" id="download-docx" download>Download .docx <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
         </div>
         <div class="preview-stage" id="preview-stage">
           <div class="empty-state" id="empty-state">
@@ -97,16 +107,6 @@
             <span>Two figures per page, each with its caption text box.</span>
           </div>
           <div class="smart-result" id="smart-result" hidden></div>
-        </div>
-        <div class="result-controls" id="result-controls" hidden>
-          <div class="result-controls-main">
-            <span class="smart-summary" id="smart-summary"></span>
-            <p class="download-status" id="download-status" role="status" aria-live="polite" hidden></p>
-          </div>
-          <div class="download-actions">
-            <button type="button" class="secondary-button" id="keep-adding">Keep adding to this document</button>
-            <a class="download-all" id="download-docx" download>Download .docx <span aria-hidden="true">↓</span></a>
-          </div>
         </div>
       </section>
     </main>

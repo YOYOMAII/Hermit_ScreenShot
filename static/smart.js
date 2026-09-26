@@ -215,9 +215,7 @@ smartForm.addEventListener('submit', async event => {
     downloadDocx.download = payload.name;
     keepAdding.disabled = false;
     showDownloadStatus('');
-    requestAnimationFrame(() => {
-      resultControls.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    });
+    smartSummary.hidden = false;
   } catch (failure) {
     showError(failure.message);
   } finally {
@@ -249,8 +247,12 @@ updateInsertFields();
 
 if (downloadDocx && window.wireHermitDownloadLink) {
   window.wireHermitDownloadLink(downloadDocx, {
-    onSuccess(name) {
-      showDownloadStatus(`Download started — check your Downloads folder for ${name || 'the document'}.`);
+    onSuccess(name, result) {
+      if (result?.mode === 'desktop' && result.path) {
+        showDownloadStatus(`Saved: ${result.path}`);
+      } else {
+        showDownloadStatus(`Saved — check your Downloads folder for ${name || 'the document'}.`);
+      }
     },
     onError(error) {
       showDownloadStatus('');

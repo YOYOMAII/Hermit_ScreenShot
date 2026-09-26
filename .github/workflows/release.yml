@@ -95,11 +95,34 @@ jobs:
             echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Write friend-facing release notes
+        run: |
+          cat > release-notes.md <<'EOF'
+          ## Download
+
+          | Platform | File | How to open |
+          |----------|------|-------------|
+          | **Mac** | HermitScreenshot-Mac.zip | Unzip → right-click **HermitScreenshot.app** → **Open** → **Open** (first time) |
+          | **Windows** | HermitScreenshot-Windows.zip | Unzip → double-click **HermitScreenshot.exe** → **More info** → **Run anyway** if asked |
+
+          No Python needed. Your files stay on your computer.
+
+          ## Features
+
+          - Code screenshots from **HTML** and **CSS** (VS Code style)
+          - **HermitSmart** — add screenshots to a Word **.docx** with captions
+
+          See **GETTING-STARTED.md** inside the zip for help.
+
+          **Version:** ${{ steps.meta.outputs.tag }}
+          EOF
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
-          name: HermitScreenshot ${{ steps.meta.outputs.tag }}
-          generate_release_notes: true
+          name: Download HermitScreenshot (Mac & Windows)
+          generate_release_notes: false
+          body_path: release-notes.md
           files: |
             HermitScreenshot-Mac.zip
             HermitScreenshot-Windows.zip

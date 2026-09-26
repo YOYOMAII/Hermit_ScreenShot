@@ -47,12 +47,17 @@ def run_desktop() -> None:
     try:
         import webview
 
+        from desktop_bridge import DesktopBridge
+
+        webview.settings["ALLOW_DOWNLOADS"] = True
+        bridge = DesktopBridge(port)
         window = webview.create_window(
             "Hermit",
             url,
             width=1120,
             height=820,
             min_size=(800, 600),
+            js_api=bridge,
         )
         webview.start()
     except Exception:
