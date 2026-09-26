@@ -11,7 +11,7 @@ Made by **Pyae Sone Aung**. Source available under the **[PolyForm Strict Licens
 | **Mac** | `HermitScreenshot-Mac.zip` | Unzip → right-click `HermitScreenshot.app` → **Open** → **Open** |
 | **Windows** | `HermitScreenshot-Windows.zip` | Unzip → `HermitScreenshot.exe` (SmartScreen: **More info** → **Run anyway**) |
 
-Copy-paste messages for friends: **[SHARE-WITH-FRIENDS.md](SHARE-WITH-FRIENDS.md)**. Full user guide: **[GETTING-STARTED.md](GETTING-STARTED.md)**.
+Full user guide: **[GETTING-STARTED.md](GETTING-STARTED.md)**.
 
 ---
 
@@ -96,50 +96,18 @@ This program copies your code into images exactly as written. It **does not** ch
 
 You are responsible for checking the final result yourself.
 
-## Share a desktop app with friends (Mac and Windows)
+## Release the desktop app (Mac and Windows)
 
-**What to send (only these):**
+Friends download from **[HermitScreenshot releases](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)**. Send them that link, never the project folder.
 
-| Friend has | Send this |
-|------------|-----------|
-| **Mac or Windows** | **[Releases / latest](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)** — pick the zip for their OS |
+**Publish a new version:** push a tag such as `v1.0.6` (or run **Actions → Release → Run workflow**). GitHub Actions builds the Mac `.app` and the Windows `.exe`, zips each one with `GETTING-STARTED.md` and `LICENSE.md`, and publishes them to the download-only repo **[YOYOMAII/HermitScreenshot](https://github.com/YOYOMAII/HermitScreenshot)**. That repo holds only a README and the license, so the "Source code" files GitHub adds to every release contain no app code. Publishing there needs a repo secret named `RELEASES_TOKEN`: a fine-grained token with **Contents: Read and write** on `YOYOMAII/HermitScreenshot`.
 
-Do **not** send your whole project, `.venv`, `build/`, `dist/`, or `code_screenshots/`. See `releases/WHAT-TO-SEND.txt`.
+**Build locally** (PyInstaller cannot make a Windows `.exe` on a Mac, or a Mac `.app` on Windows):
 
-**Make fresh zip files:**
+- **Mac:** `./scripts/build_desktop.sh` → `dist/HermitScreenshot.app`
+- **Windows:** double-click `scripts\build_desktop.bat` → `dist\HermitScreenshot.exe` and `releases\HermitScreenshot-Windows.zip`
 
-```bash
-chmod +x scripts/export_for_friends.sh
-./scripts/export_for_friends.sh
-```
-
-That creates the **Mac** zip on your Mac. For **both** Mac and Windows zips without building locally, use **[GitHub Releases](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)** (see below).
-
-**Publish a new release (Mac + Windows zips):** push a tag like `v1.0.5` or run **Actions → Release → Run workflow**. The workflow publishes the zips to the download-only repo **[YOYOMAII/HermitScreenshot](https://github.com/YOYOMAII/HermitScreenshot)**. That repo holds only a README, so the "Source code" files GitHub adds to every release contain no app code. Publishing there needs a repo secret named `RELEASES_TOKEN`: a fine-grained token with **Contents: Read and write** on `YOYOMAII/HermitScreenshot`.
-
-Friends do **not** need Python if you send the Mac zip or the Windows zip above.
-
-| Your friend uses | You build on | Ready-to-run output |
-|------------------|--------------|---------------------|
-| **Mac** | A Mac | `HermitScreenshot-Mac.zip` |
-| **Windows** | Windows (or GitHub Actions) | `HermitScreenshot-Windows.zip` |
-
-You cannot make a Windows `.exe` on a Mac (or a Mac `.app` on Windows) with this setup. Build once per platform, or ask a friend on the other OS to run the build script.
-
-**On your Mac:**
-
-```bash
-chmod +x scripts/build_desktop.sh
-./scripts/build_desktop.sh
-```
-
-**On Windows:** double-click `scripts/build_desktop.bat` or run it in Command Prompt.
-
-The first build downloads PyInstaller and pywebview and can take several minutes. The app opens in its own window. Generated files are stored in the user’s app data folder (not next to the `.app`), and still auto-delete after 1 hour.
-
-**First launch:** macOS may say the app is from an unidentified developer — right-click → **Open** → **Open** once. Windows may show SmartScreen for unsigned apps — **More info** → **Run anyway**. For a school project, that is normal unless you pay for code signing.
-
-**Windows note:** The UI uses Microsoft Edge WebView2, which is already on most Windows 10/11 PCs.
+The first build can take several minutes. Generated files are stored in the user's app data folder (not next to the app), and still auto-delete after 1 hour. The builds are unsigned, so the first launch needs right-click → **Open** on Mac, or **More info** → **Run anyway** on Windows. The Windows app uses Microsoft Edge WebView2, which is already on most Windows 10/11 PCs.
 
 To try the desktop window without building:
 

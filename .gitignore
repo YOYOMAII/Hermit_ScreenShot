@@ -10,4 +10,3 @@ packaging/icons/*.iconset/
 
 # Local release bundles (CI publishes to GitHub Releases)
 releases/*
-!releases/WHAT-TO-SEND.txt

@@ -16,9 +16,8 @@ Everything runs **on your computer**. Your files are not uploaded to the interne
 |--------------|---------------|-----------|
 | **Mac** (Apple) | `HermitScreenshot-Mac.zip` | Nothing else — unzip and open the app |
 | **Windows** | `HermitScreenshot-Windows.zip` | Nothing else — unzip and double-click **`HermitScreenshot.exe`** |
-| **Windows** (developer kit) | `HermitScreenshot-Windows-build.zip` | [Python 3](https://www.python.org/downloads/) once, then `scripts\build_desktop.bat` (see below) |
 
-The app is about **21 MB** on Mac because it includes Python and libraries inside the app so you do not install them yourself.
+Each zip is about **30 MB** because it includes Python and libraries inside the app so you do not install them yourself.
 
 ---
 
@@ -62,9 +61,6 @@ When you run **HermitScreenshot.exe**:
 
 You may need to do this **once** per download.
 
-**If you built the app yourself** (`build_desktop.bat`): run SmartScreen steps on  
-`dist\HermitScreenshot\HermitScreenshot.exe`.
-
 **If Windows Defender quarantined the file:**
 
 1. Open **Windows Security** → **Virus & threat protection** → **Protection history**.
@@ -99,24 +95,12 @@ Signing costs money each year; most school projects skip it.
 
 ## Install and open (Windows)
 
-### Option A — `HermitScreenshot-Windows.zip` (usual)
-
 1. **Unzip** `HermitScreenshot-Windows.zip`.
 2. Double-click **`HermitScreenshot.exe`** (and **`GETTING-STARTED.md`** if you want the guide).
 3. The zip contains **one app file** (`HermitScreenshot.exe`) plus the guide — that is normal.
 4. **Download .docx** in HermitSmart saves a new file straight into your **Downloads** folder. A box in the bottom-right corner shows the file name with **Open** and **Show in folder** buttons.
 
 If Windows SmartScreen warns you, see **[“Untrusted” or blocked app](#untrusted-or-blocked-app--mac-and-windows)** above.
-
-### Option B — you received `HermitScreenshot-Windows-build.zip` (build it yourself)
-
-1. Install **Python 3.9+** from [python.org](https://www.python.org/downloads/).  
-   On the installer, check **“Add python.exe to PATH”** if you see it.
-2. Unzip the folder.
-3. Double-click **`scripts\build_desktop.bat`** and wait (first time can take several minutes).
-4. Open **`dist\HermitScreenshot\HermitScreenshot.exe`**.
-
-You only build once. You can zip `dist\HermitScreenshot` and reuse it later.
 
 **WebView2:** The app window uses Microsoft Edge WebView2, which is already on most Windows 10/11 PCs.
 
@@ -185,7 +169,6 @@ HermitScreenshot **does not check** if your code is correct. **You** must:
 | “Upload too large” | Fewer files or smaller files (limit 40 MB per batch) |
 | “Only .html and .css” | Rename or export the correct file type |
 | Empty or error after generate | Use formatted source, not one giant minified line |
-| Windows build fails | Install Python, run `build_desktop.bat` again, read any red text in the window |
 | HermitSmart page position wrong | Word page numbers are estimates — move figures in Word if needed |
 
 ---
@@ -199,4 +182,4 @@ HermitScreenshot **does not check** if your code is correct. **You** must:
 
 ---
 
-For developers and sharing builds, see **README.md** in the full project.
+Source code and developer notes: [github.com/YOYOMAII/Hermit_ScreenShot](https://github.com/YOYOMAII/Hermit_ScreenShot)

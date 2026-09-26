@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build macOS .icns and Windows .ico from hermit-app-icon.jpg."""
+"""Build macOS .icns and Windows .ico from static/hermit-icon.jpg."""
 
 from __future__ import annotations
 
@@ -11,12 +11,11 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "hermit-app-icon.jpg"
+SOURCE = ROOT / "static" / "hermit-icon.jpg"
 OUT = ROOT / "packaging" / "icons"
 ICONSET = OUT / "HermitScreenshot.iconset"
 ICNS = OUT / "HermitScreenshot.icns"
 ICO = OUT / "HermitScreenshot.ico"
-STATIC_ICON = ROOT / "static" / "hermit-icon.jpg"
 
 ICONSET_SIZES = (16, 32, 128, 256, 512)
 
@@ -61,11 +60,9 @@ def main() -> None:
     write_icns()
     if ICONSET.is_dir():
         shutil.rmtree(ICONSET)
-    shutil.copyfile(SOURCE, STATIC_ICON)
     print(f"Wrote {ICO}")
     if ICNS.is_file():
         print(f"Wrote {ICNS}")
-    print(f"Updated {STATIC_ICON}")
 
 
 if __name__ == "__main__":
