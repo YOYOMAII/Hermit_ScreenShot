@@ -1,5 +1,7 @@
 # HermitScreenshot — first-time user guide
 
+**Download (Mac or Windows):** [GitHub Releases — latest version](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)
+
 HermitScreenshot turns your **HTML** and **CSS** files into pictures that look like code in Visual Studio Code. You can download the images or put them into a **Word** document with **HermitSmart**.
 
 Everything runs **on your computer**. Your files are not uploaded to the internet.

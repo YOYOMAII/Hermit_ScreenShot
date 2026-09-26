@@ -1,6 +1,17 @@
 # Code screenshots
 
-**New users (desktop app):** see **[GETTING-STARTED.md](GETTING-STARTED.md)** — install, screenshots, HermitSmart, and troubleshooting.
+## Download for friends (Mac & Windows)
+
+**Share this link:** **[github.com/YOYOMAII/Hermit_ScreenShot/releases/latest](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)**
+
+| Platform | Download | Run |
+|----------|----------|-----|
+| **Mac** | `HermitScreenshot-Mac.zip` | Unzip → right-click `HermitScreenshot.app` → **Open** → **Open** |
+| **Windows** | `HermitScreenshot-Windows.zip` | Unzip → `HermitScreenshot.exe` (SmartScreen: **More info** → **Run anyway**) |
+
+Copy-paste messages for friends: **[SHARE-WITH-FRIENDS.md](SHARE-WITH-FRIENDS.md)**. Full user guide: **[GETTING-STARTED.md](GETTING-STARTED.md)**.
+
+---
 
 Turn HTML and CSS source files into PNGs that resemble the Visual Studio Code Light editor. The program reads your files without changing them, keeps indentation and line numbers, and makes one image for each group of 20 lines.
 
@@ -87,10 +98,9 @@ You are responsible for checking the final result yourself.
 
 **What to send (only these):**
 
-| Friend has | Send this file |
-|------------|----------------|
-| **Mac** | `releases/HermitScreenshot-Mac.zip` |
-| **Windows** | `releases/HermitScreenshot-Windows.zip` (unzip → `HermitScreenshot\HermitScreenshot.exe`) |
+| Friend has | Send this |
+|------------|-----------|
+| **Mac or Windows** | **[Releases / latest](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)** — pick the zip for their OS |
 
 Do **not** send your whole project, `.venv`, `build/`, `dist/`, or `code_screenshots/`. See `releases/WHAT-TO-SEND.txt`.
 
