@@ -99,7 +99,10 @@
           <div class="smart-result" id="smart-result" hidden></div>
         </div>
         <div class="result-controls" id="result-controls" hidden>
-          <span class="smart-summary" id="smart-summary"></span>
+          <div class="result-controls-main">
+            <span class="smart-summary" id="smart-summary"></span>
+            <p class="download-status" id="download-status" role="status" aria-live="polite" hidden></p>
+          </div>
           <div class="download-actions">
             <button type="button" class="secondary-button" id="keep-adding">Keep adding to this document</button>
             <a class="download-all" id="download-docx" download>Download .docx <span aria-hidden="true">↓</span></a>
@@ -109,6 +112,7 @@
     </main>
   </div>
   <script src="{{ url_for('static', filename='theme.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='downloads.js') }}" defer></script>
   <script src="{{ url_for('static', filename='smart.js') }}" defer></script>
 </body>
 </html>

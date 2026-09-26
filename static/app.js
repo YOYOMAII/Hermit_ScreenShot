@@ -207,9 +207,13 @@ form.addEventListener('submit', async event => {
     strip.hidden = false;
     count.textContent = `${images.length} image${images.length === 1 ? '' : 's'} ready · download within ${count.dataset.keep}`;
     allDownload.href = payload.zip_url;
+    allDownload.download = payload.zip_name || 'screenshots.zip';
     zoomStep = 0;
     showImage(0);
     applyZoom();
+    requestAnimationFrame(() => {
+      controls.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
   } catch (failure) {
     showError(failure.message);
     if (images.length) {
@@ -229,3 +233,8 @@ form.addEventListener('submit', async event => {
     setGenerating(false);
   }
 });
+
+if (window.wireHermitDownloadLink) {
+  window.wireHermitDownloadLink(currentDownload);
+  window.wireHermitDownloadLink(allDownload);
+}

@@ -20,6 +20,7 @@ const resultControls = document.querySelector('#result-controls');
 const smartSummary = document.querySelector('#smart-summary');
 const keepAdding = document.querySelector('#keep-adding');
 const downloadDocx = document.querySelector('#download-docx');
+const downloadStatus = document.querySelector('#download-status');
 
 let docFile = null;
 let docId = null;
@@ -32,6 +33,12 @@ const MAX_UPLOAD_BYTES = 40 * 1024 * 1024;
 function showError(message) {
   formError.textContent = message;
   formError.hidden = !message;
+}
+
+function showDownloadStatus(message) {
+  if (!downloadStatus) return;
+  downloadStatus.textContent = message;
+  downloadStatus.hidden = !message;
 }
 
 async function postForm(url, data, fallback) {
@@ -207,6 +214,10 @@ smartForm.addEventListener('submit', async event => {
     downloadDocx.href = payload.download_url;
     downloadDocx.download = payload.name;
     keepAdding.disabled = false;
+    showDownloadStatus('');
+    requestAnimationFrame(() => {
+      resultControls.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
   } catch (failure) {
     showError(failure.message);
   } finally {
@@ -235,3 +246,15 @@ keepAdding.addEventListener('click', () => {
 });
 
 updateInsertFields();
+
+if (downloadDocx && window.wireHermitDownloadLink) {
+  window.wireHermitDownloadLink(downloadDocx, {
+    onSuccess(name) {
+      showDownloadStatus(`Download started — check your Downloads folder for ${name || 'the document'}.`);
+    },
+    onError(error) {
+      showDownloadStatus('');
+      showError(error.message);
+    },
+  });
+}
