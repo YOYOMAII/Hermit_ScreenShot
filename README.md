@@ -2,7 +2,7 @@
 
 ## Download for friends (Mac & Windows)
 
-**Share this link:** **[github.com/YOYOMAII/Hermit_ScreenShot/releases/latest](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)**
+**Share this link:** **[github.com/YOYOMAII/HermitScreenshot/releases/latest](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)**
 
 | Platform | Download | Run |
 |----------|----------|-----|
@@ -100,7 +100,7 @@ You are responsible for checking the final result yourself.
 
 | Friend has | Send this |
 |------------|-----------|
-| **Mac or Windows** | **[Releases / latest](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)** — pick the zip for their OS |
+| **Mac or Windows** | **[Releases / latest](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)** — pick the zip for their OS |
 
 Do **not** send your whole project, `.venv`, `build/`, `dist/`, or `code_screenshots/`. See `releases/WHAT-TO-SEND.txt`.
 
@@ -111,9 +111,9 @@ chmod +x scripts/export_for_friends.sh
 ./scripts/export_for_friends.sh
 ```
 
-That creates the **Mac** zip on your Mac. For **both** Mac and Windows zips without building locally, use **[GitHub Releases](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)** (see below).
+That creates the **Mac** zip on your Mac. For **both** Mac and Windows zips without building locally, use **[GitHub Releases](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)** (see below).
 
-**Publish a new release (Mac + Windows zips):** push a tag `v1.0.0` or run **Actions → Release → Run workflow**. Friends download from the Releases page.
+**Publish a new release (Mac + Windows zips):** push a tag like `v1.0.5` or run **Actions → Release → Run workflow**. This repo is private, so the workflow publishes the zips to the public download-only repo **[YOYOMAII/HermitScreenshot](https://github.com/YOYOMAII/HermitScreenshot)**. That repo holds only a README, so the "Source code" files GitHub adds to every release contain no app code. Publishing there needs a repo secret named `RELEASES_TOKEN`: a fine-grained token with **Contents: Read and write** on `YOYOMAII/HermitScreenshot`.
 
 Friends do **not** need Python if you send the Mac zip or the Windows zip above.
 

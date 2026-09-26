@@ -7,7 +7,7 @@
   <link rel="icon" href="{{ url_for('static', filename='hermit-icon.jpg') }}" type="image/jpeg">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
-<body>
+<body data-desktop="{{ '1' if desktop_mode else '' }}">
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">

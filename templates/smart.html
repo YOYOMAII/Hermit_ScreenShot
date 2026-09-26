@@ -7,7 +7,7 @@
   <link rel="icon" href="{{ url_for('static', filename='hermit-icon.jpg') }}" type="image/jpeg">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
-<body>
+<body data-desktop="{{ '1' if desktop_mode else '' }}">
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
@@ -87,7 +87,6 @@
           <div class="preview-toolbar-leading">
             <h2>Document preview</h2>
             <span class="smart-summary" id="smart-summary" hidden></span>
-            <p class="download-status" id="download-status" role="status" aria-live="polite" hidden></p>
           </div>
           <div class="preview-toolbar-trailing">
             <span class="preview-count" id="preview-count" data-keep="{{ keep_hours }} hour{{ '' if keep_hours == 1 else 's' }}">No pages yet</span>

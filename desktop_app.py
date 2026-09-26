@@ -49,6 +49,7 @@ def run_desktop() -> None:
 
         from desktop_bridge import DesktopBridge
 
+        app.config["HERMIT_DESKTOP"] = True
         webview.settings["ALLOW_DOWNLOADS"] = True
         bridge = DesktopBridge(port)
         window = webview.create_window(
@@ -61,6 +62,7 @@ def run_desktop() -> None:
         )
         webview.start()
     except Exception:
+        app.config["HERMIT_DESKTOP"] = False
         print(f"Opening in your browser: {url}")
         webbrowser.open(url)
         try:

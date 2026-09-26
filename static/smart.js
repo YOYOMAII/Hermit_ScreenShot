@@ -20,8 +20,6 @@ const resultControls = document.querySelector('#result-controls');
 const smartSummary = document.querySelector('#smart-summary');
 const keepAdding = document.querySelector('#keep-adding');
 const downloadDocx = document.querySelector('#download-docx');
-const downloadStatus = document.querySelector('#download-status');
-
 let docFile = null;
 let docId = null;
 let lastBuild = null;
@@ -33,12 +31,6 @@ const MAX_UPLOAD_BYTES = 40 * 1024 * 1024;
 function showError(message) {
   formError.textContent = message;
   formError.hidden = !message;
-}
-
-function showDownloadStatus(message) {
-  if (!downloadStatus) return;
-  downloadStatus.textContent = message;
-  downloadStatus.hidden = !message;
 }
 
 async function postForm(url, data, fallback) {
@@ -214,8 +206,13 @@ smartForm.addEventListener('submit', async event => {
     downloadDocx.href = payload.download_url;
     downloadDocx.download = payload.name;
     keepAdding.disabled = false;
-    showDownloadStatus('');
     smartSummary.hidden = false;
+    window.setTimeout(() => {
+      const { top, bottom } = resultControls.getBoundingClientRect();
+      if (top < 0 || bottom > window.innerHeight - 90) {
+        window.scrollBy({ top: top - 24, behavior: 'smooth' });
+      }
+    }, 50);
   } catch (failure) {
     showError(failure.message);
   } finally {
@@ -245,18 +242,4 @@ keepAdding.addEventListener('click', () => {
 
 updateInsertFields();
 
-if (downloadDocx && window.wireHermitDownloadLink) {
-  window.wireHermitDownloadLink(downloadDocx, {
-    onSuccess(name, result) {
-      if (result?.mode === 'desktop' && result.path) {
-        showDownloadStatus(`Saved: ${result.path}`);
-      } else {
-        showDownloadStatus(`Saved — check your Downloads folder for ${name || 'the document'}.`);
-      }
-    },
-    onError(error) {
-      showDownloadStatus('');
-      showError(error.message);
-    },
-  });
-}
+if (window.wireHermitDownloadLink) window.wireHermitDownloadLink(downloadDocx);

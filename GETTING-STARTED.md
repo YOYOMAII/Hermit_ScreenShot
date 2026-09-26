@@ -1,6 +1,6 @@
 # HermitScreenshot — first-time user guide
 
-**Download (Mac or Windows):** [GitHub Releases — latest version](https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest)
+**Download (Mac or Windows):** [GitHub Releases — latest version](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)
 
 HermitScreenshot turns your **HTML** and **CSS** files into pictures that look like code in Visual Studio Code. You can download the images or put them into a **Word** document with **HermitSmart**.
 
@@ -102,7 +102,7 @@ Signing costs money each year; most school projects skip it.
 1. **Unzip** `HermitScreenshot-Windows.zip`.
 2. Double-click **`HermitScreenshot.exe`** (and **`GETTING-STARTED.md`** if you want the guide).
 3. The zip contains **one app file** (`HermitScreenshot.exe`) plus the guide — that is normal.
-4. **Download .docx** in HermitSmart opens a **Save** window — pick where to store your Word file (the app does not use the browser Downloads folder on desktop).
+4. **Download .docx** in HermitSmart saves a new file straight into your **Downloads** folder. A box in the bottom-right corner shows the file name with **Open** and **Show in folder** buttons.
 
 If Windows SmartScreen warns you, see **[“Untrusted” or blocked app](#untrusted-or-blocked-app--mac-and-windows)** above.
 
@@ -148,7 +148,7 @@ You only build once. You can zip `dist\HermitScreenshot` and reuse it later.
 3. Add your **HTML/CSS** code files.
 4. Set **lines per image** and caption options if needed.
 5. Click **Build Word document**.
-6. **Download** the updated `.docx` and open it in Microsoft Word.
+6. Click **Download .docx**. The new file goes into your **Downloads** folder (a second download is saved as `name (1).docx`, so nothing is overwritten). Click **Open** in the box that appears, or open it in Microsoft Word.
 
 ### Layout
 

@@ -90,6 +90,11 @@ def start_background_tasks() -> None:
     threading.Thread(target=remove_old_results_forever, daemon=True).start()
 
 
+@app.context_processor
+def desktop_flag():
+    return {"desktop_mode": bool(app.config.get("HERMIT_DESKTOP"))}
+
+
 @app.get("/")
 def index():
     return render_template("index.html", keep_hours=KEEP_RESULTS_HOURS)

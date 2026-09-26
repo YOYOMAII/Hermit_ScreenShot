@@ -2,7 +2,7 @@ HermitScreenshot — what to send friends
 ======================================
 
 ONE LINK FOR EVERYONE:
-  https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest
+  https://github.com/YOYOMAII/HermitScreenshot/releases/latest
 
 Mac friend:
   Download HermitScreenshot-Mac.zip

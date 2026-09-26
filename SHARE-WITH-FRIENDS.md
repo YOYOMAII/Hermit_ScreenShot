@@ -4,7 +4,7 @@ Send **one link**. Friends pick Mac or Windows — no Python, no GitHub account 
 
 ## Link to send
 
-**https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest**
+**https://github.com/YOYOMAII/HermitScreenshot/releases/latest**
 
 ---
 
@@ -13,7 +13,7 @@ Send **one link**. Friends pick Mac or Windows — no Python, no GitHub account 
 ```
 HermitScreenshot — code screenshots for assignments
 
-Download: https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest
+Download: https://github.com/YOYOMAII/HermitScreenshot/releases/latest
 → HermitScreenshot-Mac.zip
 
 1. Unzip
@@ -31,7 +31,7 @@ Runs only on your Mac. Files stay on your computer.
 ```
 HermitScreenshot — code screenshots for assignments
 
-Download: https://github.com/YOYOMAII/Hermit_ScreenShot/releases/latest
+Download: https://github.com/YOYOMAII/HermitScreenshot/releases/latest
 → HermitScreenshot-Windows.zip
 
 1. Unzip

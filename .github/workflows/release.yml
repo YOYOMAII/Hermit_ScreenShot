@@ -74,6 +74,10 @@ jobs:
   publish:
     needs: [build-mac, build-windows]
     runs-on: ubuntu-latest
+    env:
+      # Public download-only repo: its release "Source code" archives contain just a README.
+      PUBLIC_REPO: YOYOMAII/HermitScreenshot
+      HAS_RELEASES_TOKEN: ${{ secrets.RELEASES_TOKEN != '' }}
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -117,7 +121,28 @@ jobs:
           **Version:** ${{ steps.meta.outputs.tag }}
           EOF
 
-      - uses: softprops/action-gh-release@v2
+      - name: Publish to public download repo
+        if: env.HAS_RELEASES_TOKEN == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: ${{ env.PUBLIC_REPO }}
+          token: ${{ secrets.RELEASES_TOKEN }}
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: Download HermitScreenshot (Mac & Windows)
+          generate_release_notes: false
+          make_latest: true
+          body_path: release-notes.md
+          files: |
+            HermitScreenshot-Mac.zip
+            HermitScreenshot-Windows.zip
+
+      - name: Warn that friends cannot see this release
+        if: env.HAS_RELEASES_TOKEN != 'true'
+        run: echo "::warning::RELEASES_TOKEN is not set, so this release goes to the private repo and friends cannot download it. See README (Publish a new release)."
+
+      - name: Publish to this repo (fallback)
+        if: env.HAS_RELEASES_TOKEN != 'true'
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.tag }}
           name: Download HermitScreenshot (Mac & Windows)
