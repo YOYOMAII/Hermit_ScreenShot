@@ -18,14 +18,16 @@ python -m PyInstaller --noconfirm --clean code_screenshots.spec
 rm -rf "$RELEASE/HermitScreenshot.app"
 cp "$ROOT/GETTING-STARTED.md" "$RELEASE/GETTING-STARTED.md"
 cd "$ROOT/dist"
-cp "$ROOT/GETTING-STARTED.md" .
-zip -r -y "$RELEASE/HermitScreenshot-Mac.zip" HermitScreenshot.app GETTING-STARTED.md
-rm -f GETTING-STARTED.md
+cp "$ROOT/GETTING-STARTED.md" "$ROOT/LICENSE.md" .
+rm -f "$RELEASE/HermitScreenshot-Mac.zip"
+zip -r -y "$RELEASE/HermitScreenshot-Mac.zip" HermitScreenshot.app GETTING-STARTED.md LICENSE.md
+rm -f GETTING-STARTED.md LICENSE.md
 
 cd "$ROOT"
+rm -f "$RELEASE/HermitScreenshot-Windows-build.zip"
 zip -r "$RELEASE/HermitScreenshot-Windows-build.zip" \
-  GETTING-STARTED.md \
-  app.py app_paths.py code_screenshot.py hermit_smart.py desktop_app.py \
+  GETTING-STARTED.md LICENSE.md \
+  app.py app_paths.py code_screenshot.py hermit_smart.py desktop_app.py desktop_bridge.py \
   code_screenshots.spec requirements.txt requirements-desktop.txt \
   hermit-app-icon.jpg \
   templates static scripts packaging/icons \

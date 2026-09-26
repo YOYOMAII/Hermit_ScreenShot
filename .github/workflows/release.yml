@@ -33,9 +33,9 @@ jobs:
       - name: Package HermitScreenshot-Mac.zip
         run: |
           mkdir -p releases
-          cp GETTING-STARTED.md dist/
+          cp GETTING-STARTED.md LICENSE.md dist/
           cd dist
-          zip -r -y ../releases/HermitScreenshot-Mac.zip HermitScreenshot.app GETTING-STARTED.md
+          zip -r -y ../releases/HermitScreenshot-Mac.zip HermitScreenshot.app GETTING-STARTED.md LICENSE.md
 
       - uses: actions/upload-artifact@v4
         with:
@@ -62,7 +62,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path releases | Out-Null
-          Compress-Archive -Path dist/HermitScreenshot.exe, GETTING-STARTED.md `
+          Compress-Archive -Path dist/HermitScreenshot.exe, GETTING-STARTED.md, LICENSE.md `
             -DestinationPath releases/HermitScreenshot-Windows.zip -Force
 
       - uses: actions/upload-artifact@v4
@@ -117,6 +117,8 @@ jobs:
           - **HermitSmart** — add screenshots to a Word **.docx** with captions
 
           See **GETTING-STARTED.md** inside the zip for help.
+
+          Made by **Pyae Sone Aung**. Personal and non-commercial use only. See **LICENSE.md** in the zip (PolyForm Strict 1.0.0).
 
           **Version:** ${{ steps.meta.outputs.tag }}
           EOF

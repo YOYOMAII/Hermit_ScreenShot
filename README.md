@@ -1,5 +1,7 @@
 # Code screenshots
 
+Made by **Pyae Sone Aung**. Source available under the **[PolyForm Strict License 1.0.0](LICENSE.md)**. See [License](#license).
+
 ## Download for friends (Mac & Windows)
 
 **Share this link:** **[github.com/YOYOMAII/HermitScreenshot/releases/latest](https://github.com/YOYOMAII/HermitScreenshot/releases/latest)**
@@ -151,3 +153,17 @@ python desktop_app.py
 ```bash
 python -m unittest -v
 ```
+
+## License
+
+Copyright (c) 2026 **Pyae Sone Aung**. Licensed under the **[PolyForm Strict License 1.0.0](LICENSE.md)**.
+
+In plain words (the [LICENSE](LICENSE.md) file is what counts):
+
+| You may | You may not |
+|---------|-------------|
+| Read and study the code | Sell it, or use it to make money |
+| Use the app for personal, school, or other non-commercial work | Share copies of the code or the app as your own download |
+| | Change it, or build your own version based on it |
+
+For anything else, such as commercial use, ask Pyae Sone Aung for permission first.
