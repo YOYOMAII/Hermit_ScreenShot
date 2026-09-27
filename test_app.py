@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from PIL import Image
+
 import app as web_app
 
 
@@ -29,6 +31,22 @@ class UploadPageTests(unittest.TestCase):
                     self.assertEqual(archive_response.status_code, 200)
                     image_response.close()
                     archive_response.close()
+
+    def test_long_line_on_later_page_does_not_widen_earlier_images(self):
+        source = ("<p>short</p>\n" * 25 + "<p>" + "x" * 900 + "</p>\n").encode()
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(web_app, "OUTPUT_ROOT", Path(folder)):
+                with web_app.app.test_client() as client:
+                    response = client.post("/api/render", data={
+                        "files": (io.BytesIO(source), "index.html"),
+                        "lines": "25", "font_size": "30", "width": "1500",
+                    }, content_type="multipart/form-data")
+                    self.assertEqual(response.status_code, 200, response.json)
+                    batch = Path(folder) / response.json["batch"]
+                    with Image.open(batch / "index1.png") as first, \
+                            Image.open(batch / "index2.png") as second:
+                        self.assertEqual(first.width, 1500)
+                        self.assertGreater(second.width, first.width)
 
     def test_rejects_other_file_types(self):
         with tempfile.TemporaryDirectory() as folder:

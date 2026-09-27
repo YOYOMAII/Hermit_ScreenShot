@@ -223,6 +223,18 @@ class SmartPageTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(self.client.get("/api/smart/files/../etc/passwd").status_code, 404)
 
+    def test_blank_document_endpoint(self):
+        response = self.client.post("/api/smart/blank", data={}, content_type="multipart/form-data")
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertEqual(response.json["name"], "Document.docx")
+        self.assertEqual(response.json["next_figure"], 1)
+
+    def test_build_from_new_document_flag(self):
+        response = self.build(new_document="1")
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertEqual(response.json["name"], "Document.docx")
+        self.assertEqual(response.json["figures"][0]["caption"], "Fig 1: index1.html")
+
 
 if __name__ == "__main__":
     unittest.main()

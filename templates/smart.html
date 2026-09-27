@@ -30,7 +30,7 @@
         </div>
 
         <form id="smart-form">
-          <div class="settings-heading"><span>Word document</span><span>01 / 03</span></div>
+          <div class="settings-heading"><span>Word document</span><span class="settings-heading-actions"><button type="button" class="link-button" id="new-docx">New document</button><span class="settings-step">01 / 03</span></span></div>
           <label class="dropzone smart-dropzone" id="docx-dropzone" for="docx">
             <span class="upload-icon" aria-hidden="true">W</span>
             <strong>Drop a .docx here</strong>
@@ -73,7 +73,7 @@
           <div class="fields">
             <label><span>Caption text (Arial 11)</span><input name="caption_template" id="caption-template" type="text" maxlength="200" value="{{ default_caption }}"></label>
           </div>
-          <p class="field-hint">Use {n} figure number, {stem} file name, {part} part number, {ext} extension, {file} full name, {file_no} file number.</p>
+          <p class="field-hint"><strong>Placeholders:</strong> {n} overall figure # · {file_no} file order in your upload · {part} page chunk (1, 2, …) · {file} full name (e.g. cart.html) · {stem} name without extension (cart) · {ext} extension (.html).<br><strong>Example:</strong> <code>Figure {file_no}.{part}: {file} Source Code (Part {part})</code> → <code>Figure 2.1: cart.html Source Code (Part 1)</code> when <code>cart.html</code> is the 2nd file you selected.</p>
           <p class="field-hint" id="page-hint" hidden>Page numbers come from the page breaks Word saved in the file, so check the result in Word.</p>
           <button class="primary-button" type="submit" id="build-button"><span>Build Word document</span><span aria-hidden="true">↗</span></button>
           <p class="form-error" id="form-error" role="alert" hidden></p>

@@ -20,7 +20,9 @@ const resultControls = document.querySelector('#result-controls');
 const smartSummary = document.querySelector('#smart-summary');
 const keepAdding = document.querySelector('#keep-adding');
 const downloadDocx = document.querySelector('#download-docx');
+const newDocxButton = document.querySelector('#new-docx');
 let docFile = null;
+let docIsNew = false;
 let docId = null;
 let lastBuild = null;
 let codeFiles = [];
@@ -66,6 +68,30 @@ function updateInsertFields() {
 }
 insertMode.addEventListener('change', updateInsertFields);
 
+async function createNewDocument() {
+  showError('');
+  docFile = null;
+  docId = null;
+  docIsNew = true;
+  docxInput.value = '';
+  describeDocument('Document.docx', { pages_estimate: 1, figures: 0, next_figure: 1 }, 'Creating…');
+  newDocxButton.disabled = true;
+  try {
+    const payload = await postForm('/api/smart/blank', new FormData(), 'Could not create a new Word document.');
+    if (!docIsNew) return;
+    describeDocument(payload.name, payload, 'New blank document');
+    insertMode.value = 'end';
+    updateInsertFields();
+  } catch (failure) {
+    if (!docIsNew) return;
+    docIsNew = false;
+    docStatus.hidden = true;
+    showError(failure.message);
+  } finally {
+    newDocxButton.disabled = false;
+  }
+}
+
 async function setDocument(file) {
   if (!file) return;
   if (!/\.docx$/i.test(file.name)) {
@@ -74,6 +100,7 @@ async function setDocument(file) {
   }
   showError('');
   docFile = file;
+  docIsNew = false;
   docId = null;
   describeDocument(file.name, { pages_estimate: 1, figures: 0, next_figure: 1 }, 'Reading…');
   const data = new FormData();
@@ -128,6 +155,7 @@ function wireDropzone(zone, onFiles) {
 
 docxInput.addEventListener('change', () => setDocument(docxInput.files[0]));
 wireDropzone(docxDropzone, files => setDocument(files[0]));
+newDocxButton.addEventListener('click', createNewDocument);
 codeInput.addEventListener('change', () => setCodeFiles(codeInput.files));
 wireDropzone(codeDropzone, setCodeFiles);
 
@@ -166,8 +194,8 @@ function renderPages(figures) {
 
 smartForm.addEventListener('submit', async event => {
   event.preventDefault();
-  if (!docFile && !docId) {
-    showError('Choose a Word (.docx) document.');
+  if (!docFile && !docId && !docIsNew) {
+    showError('Choose a Word (.docx) document, or click New document.');
     return;
   }
   if (!codeFiles.length) {
@@ -178,7 +206,7 @@ smartForm.addEventListener('submit', async event => {
     showError(`Choose up to ${MAX_FILES} code files at a time.`);
     return;
   }
-  const uploadBytes = codeFiles.reduce((total, file) => total + file.size, docFile ? docFile.size : 0);
+  const uploadBytes = codeFiles.reduce((total, file) => total + file.size, docFile?.size ?? 0);
   if (uploadBytes > MAX_UPLOAD_BYTES) {
     showError('The document and code files are larger than 40 MB together. Upload fewer code files at a time.');
     return;
@@ -190,6 +218,7 @@ smartForm.addEventListener('submit', async event => {
   data.delete('docx');
   data.delete('files');
   if (docId) data.append('doc_id', docId);
+  else if (docIsNew) data.append('new_document', '1');
   else data.append('docx', docFile, docFile.name);
   for (const file of codeFiles) data.append('files', file, file.name);
   try {
@@ -225,6 +254,7 @@ keepAdding.addEventListener('click', () => {
   if (!lastBuild) return;
   docId = lastBuild.doc_id;
   docFile = null;
+  docIsNew = false;
   docxInput.value = '';
   describeDocument(lastBuild.name, {
     pages_estimate: lastBuild.pages_estimate,

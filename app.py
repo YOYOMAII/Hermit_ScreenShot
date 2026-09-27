@@ -15,6 +15,7 @@ from pathlib import Path
 from urllib.parse import quote
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
 
+from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 from flask import Flask, abort, jsonify, render_template, request, send_from_directory
 from werkzeug.exceptions import InternalServerError, RequestEntityTooLarge
@@ -172,7 +173,7 @@ def render_upload():
                 "--output", str(destination), "--lines", str(lines),
                 "--font-size", str(font_size), "--width", str(width),
                 "--theme", theme, "--name-style", name_style,
-                "--active-line", str(active_line),
+                "--active-line", str(active_line), "--fit-width",
             ]
             main(arguments)
 
@@ -205,6 +206,13 @@ def generated_file(batch: str, name: str):
     return send_from_directory(OUTPUT_ROOT / batch, name, as_attachment=name.endswith(".zip"))
 
 
+def blank_docx_bytes() -> bytes:
+    """Minimal empty Word document used when the user starts from New document."""
+    stream = io.BytesIO()
+    Document().save(stream)
+    return stream.getvalue()
+
+
 def smart_source():
     """Return (path or upload stream, display name) for the Word document to edit."""
     doc_id = request.form.get("doc_id", "").strip()
@@ -215,6 +223,8 @@ def smart_source():
         name_file = folder / "name.txt"
         name = name_file.read_text(encoding="utf-8") if name_file.is_file() else "document.docx"
         return folder / "document.docx", name
+    if request.form.get("new_document") == "1":
+        return io.BytesIO(blank_docx_bytes()), "Document.docx"
     upload = request.files.get("docx")
     if not upload or not upload.filename:
         raise ValueError("Choose a Word (.docx) document.")
@@ -225,6 +235,15 @@ def smart_source():
         name = "document.docx"
     # Python 3.9's SpooledTemporaryFile lacks seekable(), which zipfile needs.
     return io.BytesIO(upload.read()), name
+
+
+@app.post("/api/smart/blank")
+def smart_blank():
+    try:
+        info = inspect_document(io.BytesIO(blank_docx_bytes()))
+    except (BadZipFile, KeyError, PackageNotFoundError):
+        return jsonify(error="Could not create a new Word document."), 400
+    return jsonify(name="Document.docx", **info)
 
 
 @app.post("/api/smart/inspect")

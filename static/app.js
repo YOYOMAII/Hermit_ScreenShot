@@ -16,7 +16,7 @@ const previewImage = document.querySelector('#preview-image');
 const zoomOut = document.querySelector('#zoom-out');
 const zoomIn = document.querySelector('#zoom-in');
 const zoomLevel = document.querySelector('#zoom-level');
-const ZOOM_STEPS = [1, 1.5, 2, 3, 4];
+const FIT_STEPS = [1, 1.5, 2, 3, 4];
 const count = document.querySelector('#preview-count');
 const controls = document.querySelector('#result-controls');
 const strip = document.querySelector('#thumbnail-strip');
@@ -131,22 +131,40 @@ function showImage(index) {
 previous.addEventListener('click', () => showImage(Math.max(0, active - 1)));
 next.addEventListener('click', () => showImage(Math.min(images.length - 1, active + 1)));
 
-// Zoom is relative to the size that fits the whole image in the stage.
-function applyZoom(scrollToStart = false) {
-  const zoom = ZOOM_STEPS[zoomStep];
-  zoomLevel.textContent = zoom === 1 ? 'Fit' : `${zoom}×`;
-  zoomOut.disabled = zoomStep === 0;
-  zoomIn.disabled = zoomStep === ZOOM_STEPS.length - 1;
-  result.classList.toggle('zoomed', zoom > 1);
-  if (zoom === 1 || !previewImage.naturalWidth) {
-    previewImage.style.width = '';
-    return;
-  }
-  const available = Math.min(
+function fitScale() {
+  if (!previewImage.naturalWidth) return 0;
+  return Math.min(
     (result.clientWidth - 32) / previewImage.naturalWidth,
     (result.clientHeight - 32) / previewImage.naturalHeight,
   );
-  previewImage.style.width = `${Math.round(previewImage.naturalWidth * available * zoom)}px`;
+}
+
+// Zoom is relative to the size that fits the whole image in the stage. 100% is
+// ordered among those steps by size, so zooming in never makes the image smaller.
+function zoomSteps() {
+  const steps = FIT_STEPS.map(scale => ({ scale, label: scale === 1 ? 'Fit' : `${scale}×` }));
+  const fit = fitScale();
+  if (fit <= 0 || fit >= 0.95) return steps;
+  const actual = 1 / fit;
+  return [
+    ...steps.filter(step => step.scale === 1 || Math.abs(step.scale - actual) / actual > 0.05),
+    { scale: actual, label: '100%' },
+  ].sort((a, b) => a.scale - b.scale);
+}
+
+function applyZoom(scrollToStart = false) {
+  const steps = zoomSteps();
+  zoomStep = Math.min(zoomStep, steps.length - 1);
+  const zoom = steps[zoomStep];
+  zoomLevel.textContent = zoom.label;
+  zoomOut.disabled = zoomStep === 0;
+  zoomIn.disabled = zoomStep === steps.length - 1;
+  result.classList.toggle('zoomed', zoomStep !== 0);
+  if (zoomStep === 0 || !previewImage.naturalWidth) {
+    previewImage.style.width = '';
+    return;
+  }
+  previewImage.style.width = `${Math.round(previewImage.naturalWidth * fitScale() * zoom.scale)}px`;
   if (scrollToStart) {
     // Code starts at the left edge, so show that side first.
     result.scrollLeft = 0;
@@ -155,15 +173,16 @@ function applyZoom(scrollToStart = false) {
 }
 
 function setZoom(step) {
-  zoomStep = Math.max(0, Math.min(ZOOM_STEPS.length - 1, step));
+  // Measure the stage at Fit so the step list matches what the user sees.
   result.classList.remove('zoomed');
   previewImage.style.width = '';
+  zoomStep = Math.max(0, Math.min(zoomSteps().length - 1, step));
   applyZoom(true);
 }
 
 zoomOut.addEventListener('click', () => setZoom(zoomStep - 1));
 zoomIn.addEventListener('click', () => setZoom(zoomStep + 1));
-previewImage.addEventListener('click', () => setZoom(zoomStep ? 0 : 2));
+previewImage.addEventListener('click', () => setZoom(zoomStep ? 0 : Infinity));
 previewImage.addEventListener('load', () => applyZoom(true));
 window.addEventListener('resize', () => applyZoom());
 
