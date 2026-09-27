@@ -32,7 +32,7 @@ class UploadPageTests(unittest.TestCase):
                     image_response.close()
                     archive_response.close()
 
-    def test_long_line_on_later_page_does_not_widen_earlier_images(self):
+    def test_long_lines_wrap_inside_the_chosen_width(self):
         source = ("<p>short</p>\n" * 25 + "<p>" + "x" * 900 + "</p>\n").encode()
         with tempfile.TemporaryDirectory() as folder:
             with patch.object(web_app, "OUTPUT_ROOT", Path(folder)):
@@ -45,8 +45,9 @@ class UploadPageTests(unittest.TestCase):
                     batch = Path(folder) / response.json["batch"]
                     with Image.open(batch / "index1.png") as first, \
                             Image.open(batch / "index2.png") as second:
-                        self.assertEqual(first.width, 1500)
-                        self.assertGreater(second.width, first.width)
+                        self.assertEqual((first.width, second.width), (1500, 1500))
+                        # One 900-character line needs many wrapped rows.
+                        self.assertGreater(second.height, 5 * 46)
 
     def test_rejects_other_file_types(self):
         with tempfile.TemporaryDirectory() as folder:

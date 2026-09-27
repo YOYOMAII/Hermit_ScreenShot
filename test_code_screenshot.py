@@ -7,7 +7,8 @@ from pathlib import Path
 from PIL import Image
 from pygments.token import Comment, Name
 
-from code_screenshot import Guide, main, prepare_file, source_lines, structural_guides
+from code_screenshot import (Guide, load_font, main, prepare_file, source_lines,
+                             structural_guides, wrap_line)
 
 
 class CodeScreenshotTests(unittest.TestCase):
@@ -37,6 +38,41 @@ class CodeScreenshotTests(unittest.TestCase):
             fit = [Image.open(Path(folder) / "fit" / f"index{n}.png").width for n in (1, 2)]
             self.assertEqual(shared[0], shared[1])
             self.assertEqual(fit, [1200, shared[1]])
+
+    def test_wrap_keeps_every_character_and_indents_continuation_rows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "index.html"
+            path.write_text('    <path d="' + "M1 2 3 4 " * 60 + '"/>\n', encoding="utf-8")
+            _, lines = prepare_file(path)
+        font = load_font(24)
+        rows = wrap_line(lines[0], 100, 1000, font, 4)
+        self.assertGreater(len(rows), 3)
+        self.assertEqual("".join(text for _, runs in rows for _, text in runs),
+                         "".join(text for _, text in lines[0]))
+        indent = font.getlength(" ") * 4
+        self.assertEqual({round(x - 100, 3) for x, _ in rows[1:]}, {round(indent, 3)})
+        for x, runs in rows[:-1]:
+            text = "".join(part for _, part in runs)
+            self.assertTrue(text.endswith(" "), text)
+            self.assertLessEqual(x + font.getlength(text), 1000)
+
+    def test_wrap_keeps_images_at_the_chosen_width(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "index.html"
+            path.write_text("<p>short</p>\n<p>" + "long " * 400 + "</p>\n", encoding="utf-8")
+            output = Path(folder) / "shots"
+            main([str(path), "--output", str(output), "--lines", "1", "--wrap"])
+            with Image.open(output / "index1.png") as first, \
+                    Image.open(output / "index2.png") as second:
+                self.assertEqual((first.width, second.width), (1200, 1200))
+                self.assertGreater(second.height, first.height * 10)
+
+    def test_wrapped_minified_line_is_still_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bootstrap.min.css"
+            path.write_text(".a{color:red}" * 20000, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "bootstrap.min.css line 1 is too long"):
+                main([str(path), "--output", str(Path(folder) / "shots"), "--wrap"])
 
     def test_html_guides_follow_matching_aligned_tags(self):
         with tempfile.TemporaryDirectory() as folder:

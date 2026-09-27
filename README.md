@@ -52,9 +52,10 @@ python code_screenshot.py index.html --font /path/to/FiraCode-Regular.ttf
 python code_screenshot.py index.html --active-line 17
 python code_screenshot.py index.html --header  # Optional old-style file bar
 python code_screenshot.py index.html --fit-width  # Each PNG only as wide as its own lines
+python code_screenshot.py index.html --wrap  # Wrap long lines like VS Code word wrap
 ```
 
-`--theme` accepts `light` (default), `light-modern`, or `dark`. `--width` sets a minimum, so every source line remains visible. Tabs display at four-space tab stops by default. PNGs are saved with 144 DPI metadata for document insertion.
+`--theme` accepts `light` (default), `light-modern`, or `dark`. `--width` sets a minimum, so every source line remains visible. With `--wrap` (what the upload page and HermitSmart use), `--width` is the image width instead: longer lines continue on extra rows without a line number, so a long SVG path or URL no longer makes the whole image wide and tiny. Tabs display at four-space tab stops by default. PNGs are saved with 144 DPI metadata for document insertion.
 
 For input files with the same stem (for example, `index.html` and `index.css`), names include the extension to avoid collisions: `index_html1.png` and `index_css1.png`.
 

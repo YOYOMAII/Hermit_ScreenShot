@@ -173,7 +173,7 @@ def render_upload():
                 "--output", str(destination), "--lines", str(lines),
                 "--font-size", str(font_size), "--width", str(width),
                 "--theme", theme, "--name-style", name_style,
-                "--active-line", str(active_line), "--fit-width",
+                "--active-line", str(active_line), "--wrap",
             ]
             main(arguments)
 
@@ -304,7 +304,7 @@ def smart_build():
                 upload.save(path)
                 main([str(path), "--output", str(work / "images"), "--lines", str(lines),
                       "--font-size", str(font_size), "--width", str(width), "--theme", theme,
-                      "--fit-width"], max_images=MAX_IMAGES - len(figures))
+                      "--wrap"], max_images=MAX_IMAGES - len(figures))
                 images = sorted((work / "images").glob("*.png"), key=page_sort_key)
                 figures += [Figure(image, Path(display).stem, suffix, file_no, part)
                             for part, image in enumerate(images, start=1)]

@@ -9,6 +9,8 @@ import re
 import sys
 from dataclasses import dataclass
 from html.parser import HTMLParser
+from itertools import groupby
+from operator import itemgetter
 from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
@@ -34,6 +36,9 @@ VOID_HTML_TAGS = frozenset({
 # Wider images can't be shown by browsers or placed readably in a document,
 # and a minified file's single line would otherwise need millions of pixels.
 MAX_LINE_WIDTH = 32000
+# With wrapping, a line needing more rows than this is minified code, not something to read.
+MAX_WRAPPED_ROWS = 400
+QUOTES = ("'", '"')
 # Pillow refuses to open larger images as a possible decompression bomb.
 MAX_IMAGE_PIXELS = 178_956_970
 MAX_IMAGES = 500
@@ -333,6 +338,55 @@ def draw_run(
     return x
 
 
+def wrap_line(
+    runs: Line, text_x: float, limit: float, font: ImageFont.FreeTypeFont, tab_width: int,
+) -> List[Tuple[float, Line]]:
+    """Split one line into (start x, runs) rows that end before limit, like VS Code word wrap.
+
+    Rows break after whitespace where possible. Continuation rows keep the
+    line's indentation unless that would leave too little room for code.
+    """
+    chars = [(token, character) for token, text in runs for character in text]
+    plain = "".join(character for _, character in chars)
+    leading = plain[:len(plain) - len(plain.lstrip(" \t"))]
+    indent = segment_width(leading, text_x, text_x, font, tab_width) - text_x
+    if indent > (limit - text_x) / 2:
+        indent = 0.0
+    tab_pixels = font.getlength(" ") * tab_width
+    widths: Dict[str, float] = {}
+
+    def row(part: Sequence[Tuple[object, str]]) -> Line:
+        return [(token, "".join(character for _, character in group))
+                for token, group in groupby(part, key=itemgetter(0))]
+
+    rows: List[Tuple[float, Line]] = []
+    start, row_x = 0, float(text_x)
+    while True:
+        x, index, break_at, has_code = row_x, start, None, False
+        while index < len(chars):
+            character = chars[index][1]
+            if character == "\t":
+                end = text_x + (int((x - text_x) / tab_pixels) + 1) * tab_pixels
+            else:
+                if character not in widths:
+                    widths[character] = font.getlength(character)
+                end = x + widths[character]
+            if end > limit and index > start:
+                break
+            x = end
+            index += 1
+            if character not in " \t":
+                has_code = True
+            elif has_code:
+                break_at = index
+        if index == len(chars):
+            rows.append((row_x, row(chars[start:])))
+            return rows
+        cut = break_at or index
+        rows.append((row_x, row(chars[start:cut])))
+        start, row_x = cut, text_x + indent
+
+
 def prepare_file(path: Path) -> Tuple[str, List[Line]]:
     if not path.is_file():
         raise ValueError(f"File not found: {path}")
@@ -359,12 +413,21 @@ def render_page(
     line_digits: int, font: ImageFont.FreeTypeFont, theme: Theme, tab_width: int,
     output_path: Path, font_size: int, guides: Sequence[Guide],
     active_line: int, show_header: bool,
+    rows: Sequence[Sequence[Tuple[float, Line]]] | None = None,
 ) -> None:
+    """Draw one page; rows holds each line's wrapped (start x, runs) rows when wrapping."""
     line_height, title_height, top_pad, bottom_pad = page_layout(font_size, show_header)
     left_pad = 28
     gutter_width = max(50, round(font.getlength("0" * line_digits)) + 10)
     text_x = left_pad + gutter_width + 24
-    height = title_height + top_pad + line_height * len(lines) + bottom_pad
+    if rows is None:
+        rows = [[(float(text_x), runs)] for runs in lines]
+    tops = []
+    row_count = 0
+    for line_rows in rows:
+        tops.append(row_count)
+        row_count += len(line_rows)
+    height = title_height + top_pad + line_height * row_count + bottom_pad
     image = Image.new("RGB", (full_width, height), theme.editor)
     draw = ImageDraw.Draw(image)
 
@@ -381,13 +444,15 @@ def render_page(
     code_top = title_height + top_pad
     last_line = first_line + len(lines) - 1
     if first_line <= active_line <= last_line:
-        active_y = code_top + (active_line - first_line) * line_height
-        draw.rectangle((text_x - 4, active_y, full_width - 1,
-                        active_y + line_height - 1), fill=theme.active_background)
+        active_index = active_line - first_line
+        active_y = code_top + tops[active_index] * line_height
+        active_bottom = active_y + len(rows[active_index]) * line_height - 1
+        draw.rectangle((text_x - 4, active_y, full_width - 1, active_bottom),
+                       fill=theme.active_background)
         draw.line((text_x - 4, active_y, full_width - 1, active_y),
                   fill=theme.active_border)
-        draw.line((text_x - 4, active_y + line_height - 1, full_width - 1,
-                   active_y + line_height - 1), fill=theme.active_border)
+        draw.line((text_x - 4, active_bottom, full_width - 1, active_bottom),
+                  fill=theme.active_border)
 
     # Use the opening tag/selector's actual visual column. A guide crosses a
     # page boundary only while its matching block remains open.
@@ -397,38 +462,46 @@ def render_page(
         if visible_start > visible_end:
             continue
         guide_x = round(text_x + font.getlength(" ") * guide.column)
-        start_y = code_top + (visible_start - first_line) * line_height
-        end_y = code_top + (visible_end - first_line + 1) * line_height - 1
+        start_index, end_index = visible_start - first_line, visible_end - first_line
+        start_y = code_top + tops[start_index] * line_height
+        end_y = code_top + (tops[end_index] + len(rows[end_index])) * line_height - 1
         draw.line((guide_x, start_y, guide_x, end_y),
                   fill=theme.indent_guide, width=1)
 
-    for index, runs in enumerate(lines):
-        y = code_top + index * line_height
+    for index, line_rows in enumerate(rows):
+        y = code_top + tops[index] * line_height
         is_active = first_line + index == active_line
         number = str(first_line + index)
         number_width = font.getlength(number)
         draw.text((round(left_pad + gutter_width - number_width), y), number,
                   font=font, fill=theme.foreground if is_active else theme.line_number,
                   anchor="la")
-        x = float(text_x)
         last_attribute = ""
-        for token, text in runs:
-            start_x = x
-            chosen_font = italic_font if token in Comment else font
-            color = color_for(token, text, language, theme)
-            x = draw_run(draw, text, x, y, text_x, chosen_font, tab_width, color)
-            if language == "HTML":
-                if token in Name.Attribute:
-                    last_attribute = text.lower()
-                elif token in String and last_attribute in ("href", "src"):
-                    quote_width = font.getlength(text[0]) if text.startswith(("'", '"')) else 0
-                    right_quote_width = font.getlength(text[-1]) if text.endswith(("'", '"')) else 0
-                    draw.line((round(start_x + quote_width), y + font_size + 3,
-                               round(x - right_quote_width), y + font_size + 3),
-                              fill=color, width=1)
-                    last_attribute = ""
-                elif token in Name.Tag or token in Punctuation and text in ("<", ">"):
-                    last_attribute = ""
+        # A wrapped link continues on the next row, so its quotes may be on different rows.
+        link_open = False
+        for row_index, (x, runs) in enumerate(line_rows):
+            y = code_top + (tops[index] + row_index) * line_height
+            for token, text in runs:
+                start_x = x
+                chosen_font = italic_font if token in Comment else font
+                color = color_for(token, text, language, theme)
+                x = draw_run(draw, text, x, y, text_x, chosen_font, tab_width, color)
+                if language == "HTML":
+                    if token in Name.Attribute:
+                        last_attribute = text.lower()
+                    elif token in String and last_attribute in ("href", "src"):
+                        opening = not link_open and text.startswith(QUOTES)
+                        closing = text.endswith(QUOTES) and (link_open or len(text) > 1)
+                        quote_width = font.getlength(text[0]) if opening else 0
+                        right_quote_width = font.getlength(text[-1]) if closing else 0
+                        draw.line((round(start_x + quote_width), y + font_size + 3,
+                                   round(x - right_quote_width), y + font_size + 3),
+                                  fill=color, width=1)
+                        link_open = (opening or link_open) and not closing
+                        if not link_open:
+                            last_attribute = ""
+                    elif token in Name.Tag or token in Punctuation and text in ("<", ">"):
+                        last_attribute = ""
         if is_active:
             draw.line((round(x), y + 2, round(x), y + font_size + 9),
                       fill=theme.caret, width=2)
@@ -451,7 +524,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--theme", choices=sorted(THEMES), default="light",
                         help="Color theme (default: light)")
     parser.add_argument("--width", type=int, default=1200, metavar="PX",
-                        help="Minimum width; expands for long lines (default: 1200)")
+                        help="Minimum width; expands for long lines unless --wrap (default: 1200)")
     parser.add_argument("--tab-width", type=int, default=4, metavar="N",
                         help="Visual spaces per tab (default: 4)")
     parser.add_argument("--name-style", choices=("simple", "padded"), default="simple",
@@ -462,6 +535,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
                         help="Include the optional file/language/line-range bar")
     parser.add_argument("--fit-width", action="store_true",
                         help="Size each PNG to its own longest line instead of sharing one width")
+    parser.add_argument("--wrap", action="store_true",
+                        help="Wrap lines wider than --width onto extra rows, like VS Code word wrap")
     return parser.parse_args(argv)
 
 
@@ -487,17 +562,20 @@ def main(argv: Sequence[str] | None = None, max_images: int = MAX_IMAGES) -> int
     text_x = 28 + gutter_width + 24
     title_font = load_font(max(14, round(args.font_size * 0.68))) if args.header else None
 
+    def too_long(path: Path, line_number: int) -> ValueError:
+        return ValueError(
+            f"{path.name} line {line_number} is too long for a screenshot. "
+            "Minified files can't be shown readably; use the original, "
+            "formatted file or split the line.")
+
     def needed_width(path: Path, language: str, lines: Sequence[Line], last_line: int) -> int:
         width = args.width
-        for line_number, runs in enumerate(lines, start=1):
+        for line_number, runs in enumerate([] if args.wrap else lines, start=1):
             x = float(text_x)
             for _, text in runs:
                 x = segment_width(text, x, text_x, font, args.tab_width)
                 if x > MAX_LINE_WIDTH:
-                    raise ValueError(
-                        f"{path.name} line {line_number} is too long for a screenshot. "
-                        "Minified files can't be shown readably; use the original, "
-                        "formatted file or split the line.")
+                    raise too_long(path, line_number)
             width = max(width, math.ceil(x + 44))
         if title_font:
             title = f"{path.name}  |  {language}  |  Lines {last_line}-{last_line}"
@@ -515,13 +593,22 @@ def main(argv: Sequence[str] | None = None, max_images: int = MAX_IMAGES) -> int
             page_lines = lines[first:first + args.lines_per_image]
             width = (needed_width(path, language, page_lines, len(lines))
                      if args.fit_width else full_width)
-            height = title_height + top_pad + line_height * len(page_lines) + bottom_pad
+            rows = None
+            row_count = len(page_lines)
+            if args.wrap:
+                rows = [wrap_line(runs, text_x, width - 44, font, args.tab_width)
+                        for runs in page_lines]
+                for offset, line_rows in enumerate(rows):
+                    if len(line_rows) > MAX_WRAPPED_ROWS:
+                        raise too_long(path, first + offset + 1)
+                row_count = sum(len(line_rows) for line_rows in rows)
+            height = title_height + top_pad + line_height * row_count + bottom_pad
             if width * height > MAX_IMAGE_PIXELS:
                 raise ValueError(
                     f"{path.name} lines {first + 1}-{first + len(page_lines)} would make a "
                     f"{width}×{height} px image, too large for most programs to open. "
                     "Use fewer lines per image, a smaller font size, or shorter lines.")
-            pages.append((path, language, lines, page_index, first, page_lines, width))
+            pages.append((path, language, lines, page_index, first, page_lines, width, rows))
 
     def page_name(stem: str, page_number: int) -> str:
         if args.name_style == "padded":
@@ -549,12 +636,12 @@ def main(argv: Sequence[str] | None = None, max_images: int = MAX_IMAGES) -> int
     args.output.mkdir(parents=True, exist_ok=True)
     guides = {path: structural_guides(language, lines, args.tab_width)
               for path, language, lines in prepared}
-    for path, language, lines, page_index, first, page_lines, width in pages:
+    for path, language, lines, page_index, first, page_lines, width, rows in pages:
         target = args.output / page_name(output_stems[path], page_index + 1)
         render_page(path, language, page_lines, first + 1, width,
                     line_digits, font, THEMES[args.theme], args.tab_width,
                     target, args.font_size, guides[path],
-                    args.active_line, args.header)
+                    args.active_line, args.header, rows)
         print(f"{target}  (lines {first + 1}-{first + len(page_lines)})")
     total = len(pages)
     print(f"Created {total} PNG{'s' if total != 1 else ''} in {args.output.resolve()}")
